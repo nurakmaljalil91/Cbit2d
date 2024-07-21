@@ -28,14 +28,40 @@ file(COPY ${SDL2_PATH}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
+# Create a shared library
 add_library(Cbit2d SHARED
         src/core/Application.cpp
         src/core/Application.h
         src/utilities/Logger.cpp
-        src/utilities/Logger.h)
+        src/utilities/Logger.h
+        src/core/Scene.cpp
+        src/core/Scene.h
+        src/core/SceneManager.cpp
+        src/core/SceneManager.h)
 
-# Link SDL2 library
+# Create an executable
+add_executable(Cbit2dApp application/src/main.cpp
+        src/core/Application.cpp
+        src/core/Application.h
+        src/utilities/Logger.cpp
+        src/utilities/Logger.h
+        src/core/Scene.cpp
+        src/core/Scene.h
+        src/core/SceneManager.cpp
+        src/core/SceneManager.h
+        application/src/scenes/CustomScene.cpp
+        application/src/scenes/CustomScene.h)
+
+# Link SDL2 library for the library
 target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
+
+# Link SDL2 library for the executable
+target_link_libraries(Cbit2dApp PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
+
+# Set linker flags for console application
+set_target_properties(Cbit2dApp PROPERTIES
+        LINK_FLAGS "-mconsole"
+)
 
 # Specify the include directories
 target_include_directories(Cbit2d PUBLIC
@@ -55,6 +81,8 @@ install(TARGETS Cbit2d
 
 # Install header and source files
 install(FILES src/core/Application.h src/core/Application.cpp DESTINATION include/cbit2d/core)
+install(FILES src/core/Scene.h src/core/Scene.cpp DESTINATION include/cbit2d/core)
+install(FILES src/core/SceneManager.h src/core/SceneManager.cpp DESTINATION include/cbit2d/core)
 install(FILES src/utilities/Logger.h src/utilities/Logger.cpp DESTINATION include/cbit2d/utilities)
 
 # Export the targets to a script

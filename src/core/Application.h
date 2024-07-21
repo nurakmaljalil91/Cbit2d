@@ -13,10 +13,15 @@
 
 
 #include <SDL2/SDL.h>
+#include "SceneManager.h"
 
 class Application {
 public:
     Application();
+
+    Application(const char *windowTitle);
+
+    Application(const char *windowTitle, int windowWidth, int windowHeight);
 
     ~Application();
 
@@ -26,11 +31,21 @@ public:
 
     void cleanup();
 
+    SceneManager &getSceneManager() {
+        return _sceneManager;
+    }
+
+
 private:
     SDL_Window *window;
+    const char *_windowTitle;
+    int _windowWidth;
+    int _windowHeight;
     SDL_Renderer *renderer;
-    bool quit;
+    bool _quit;
     SDL_Event e;
+
+    SceneManager _sceneManager;
 };
 
 #endif //CBIT2D_APPLICATION_H

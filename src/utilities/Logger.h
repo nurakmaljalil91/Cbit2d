@@ -35,12 +35,12 @@ public:
     * @brief Gets the shared pointer to the logger instance.
     * @return Shared pointer to the spdlog logger.
     */
-    static std::shared_ptr<spdlog::logger>& getLogger();
+    static std::shared_ptr<spdlog::logger> &getLogger();
+
 private:
     /// Shared pointer to the spdlog logger instance.
     static std::shared_ptr<spdlog::logger> logger;
 };
-
 
 
 #endif //CBIT2D_LOGGER_H

@@ -83,7 +83,7 @@ file(COPY ${SDL2_PATH}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_executable(MyGame src/main.cpp)
+add_executable(MyGame application/src/main.cpp)
 
 target_link_libraries(MyGame PRIVATE Cbit2d SDL2::SDL2main SDL2::SDL2 spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
 

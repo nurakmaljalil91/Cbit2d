@@ -9,10 +9,37 @@
  * @date 2024-07-20
  */
 #include <iostream>
+#include <utility>
 #include "Application.h"
 #include "../utilities/Logger.h"
 
-Application::Application() : window(nullptr), renderer(nullptr), quit(false) {}
+Application::Application() :
+        window(nullptr),
+        renderer(nullptr),
+        _quit(false) {
+    _windowTitle = "CBit 2D Application";
+    _windowWidth = 640;
+    _windowHeight = 480;
+}
+
+Application::Application(const char *windowTitle) :
+        window(nullptr),
+        renderer(nullptr),
+        _quit(false) {
+    _windowTitle = windowTitle;
+    _windowWidth = 640;
+    _windowHeight = 480;
+}
+
+Application::Application(const char *windowTitle, int windowWidth, int windowHeight) :
+        window(nullptr),
+        renderer(nullptr),
+        _quit(false) {
+    _windowTitle = windowTitle;
+    _windowWidth = windowWidth;
+    _windowHeight = windowHeight;
+}
+
 
 Application::~Application() {
     cleanup();
@@ -21,7 +48,6 @@ Application::~Application() {
 bool Application::init() {
     Logger::init();
     LOG_INFO("Starting SDL2 application");
-    std::cout << "Starting SDL2 application" << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         LOG_ERROR("SDL could not initialize! SDL_Error: {}", SDL_GetError());
@@ -29,7 +55,8 @@ bool Application::init() {
     }
     LOG_INFO("SDL initialized successfully");
 
-    window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480,
+    window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
+                              _windowHeight,
                               SDL_WINDOW_SHOWN);
     if (window == nullptr) {
         LOG_ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
@@ -48,15 +75,20 @@ bool Application::init() {
 }
 
 void Application::run() {
-    while (!quit) {
+    while (!_quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
-                quit = true;
+                _quit = true;
             }
         }
 
+        _sceneManager.update();
+
         SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(renderer);
+
+        _sceneManager.render();
+
         SDL_RenderPresent(renderer);
     }
 }
@@ -71,5 +103,5 @@ void Application::cleanup() {
         window = nullptr;
     }
     SDL_Quit();
-    LOG_INFO("SDL quit");
+    LOG_INFO("SDL _quit");
 }

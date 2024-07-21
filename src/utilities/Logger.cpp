@@ -41,6 +41,6 @@ void Logger::init() {
     }
 }
 
-std::shared_ptr<spdlog::logger>& Logger::getLogger() {
+std::shared_ptr<spdlog::logger> &Logger::getLogger() {
     return logger;
 }
