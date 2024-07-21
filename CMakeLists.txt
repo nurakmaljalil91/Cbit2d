@@ -28,6 +28,13 @@ file(COPY ${SDL2_PATH}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
+# Set SDL2_image path
+set(SDL2_IMAGE_PATH vendors/SDL_Image)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SDL2_IMAGE_PATH})
+include_directories(${SDL2_IMAGE_PATH}/include)
+link_directories(${SDL2_IMAGE_PATH}/lib)
+file(COPY ${SDL2_IMAGE_PATH}/bin/SDL2_image.dll DESTINATION ${CMAKE_BINARY_DIR})
+
 # Create a shared library
 add_library(Cbit2d SHARED
         src/core/Application.cpp
@@ -53,10 +60,10 @@ add_executable(Cbit2dApp application/src/main.cpp
         application/src/scenes/CustomScene.h)
 
 # Link SDL2 library for the library
-target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
+target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
 
 # Link SDL2 library for the executable
-target_link_libraries(Cbit2dApp PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
+target_link_libraries(Cbit2dApp PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
 
 # Set linker flags for console application
 set_target_properties(Cbit2dApp PROPERTIES

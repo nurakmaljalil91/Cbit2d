@@ -38,6 +38,7 @@ def check_if_cmake_installed():
 
 
 def run_command(command, cwd=None):
+    print(f"Running command: {command}")  # Print the command being run
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, shell=True)
     while True:
         output = process.stdout.readline()
@@ -65,7 +66,21 @@ def build_and_install(name):
         f"cmake -B_builds -DCMAKE_INSTALL_PREFIX=\"../../vendors/{name}\"  -G \"MinGW Makefiles\" "
         f"-DCMAKE_CXX_STANDARD=17"
     )
-    run_command(cmake_build_command)
+
+    cmake_build_command_for_sdl_image = (
+        f"cmake -B_builds "
+        f"-DCMAKE_INSTALL_PREFIX=\"../../vendors/{name}\" "
+        f"-DSDL2_LIBRARY=\"../../vendors/SDL2/lib/libSDL2.a\" "
+        f"-DSDL2_INCLUDE_DIR=\"../../vendors/SDL2/include/SDL2\" "
+        f"-DSDL2MAIN_LIBRARY=\"../../vendors/SDL2/lib/libSDL2main.a\" "
+        f"-G \"MinGW Makefiles\" "
+        f"-DCMAKE_CXX_STANDARD=17"
+    )
+
+    if (name == 'SDL_Image'):
+        run_command(cmake_build_command_for_sdl_image)
+    else:
+        run_command(cmake_build_command)
     cmake_install_command = (
         f"cmake --build _builds --target install"
     )

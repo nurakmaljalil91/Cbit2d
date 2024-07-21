@@ -37,15 +37,17 @@ public:
 
 
 private:
-    SDL_Window *window;
+    SDL_Window *_window;
     const char *_windowTitle;
     int _windowWidth;
     int _windowHeight;
-    SDL_Renderer *renderer;
+    SDL_Renderer *_renderer;
     bool _quit;
-    SDL_Event e;
+    SDL_Event _event;
 
     SceneManager _sceneManager;
+
+    void handleInput();
 };
 
 #endif //CBIT2D_APPLICATION_H

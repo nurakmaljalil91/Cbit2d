@@ -1,6 +1,6 @@
-//
-// Created by User on 21/7/2024.
-//
+/**
+ * @file CustomScene.cpp
+ */
 
 #include "CustomScene.h"
 #include "../../src/utilities/Logger.h"
@@ -14,12 +14,22 @@ void CustomScene::init() {
 }
 
 void CustomScene::update() {
-    LOG_INFO("CustomScene updated");
+//    LOG_INFO("CustomScene updated");
 }
 
 void CustomScene::render() {}
 
-void CustomScene::handleInput() {}
+void CustomScene::handleInput(SDL_Event event) {
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                LOG_INFO("Escape key pressed");
+                break;
+            default:
+                break;
+        }
+    }
+}
 
 void CustomScene::cleanup() {}
 

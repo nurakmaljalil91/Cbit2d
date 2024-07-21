@@ -15,7 +15,7 @@ public:
     void init();
     void update();
     void render();
-    void handleInput();
+    void handleInput(SDL_Event event);
     void cleanup();
 };
 

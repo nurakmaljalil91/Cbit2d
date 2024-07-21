@@ -14,8 +14,8 @@
 #include "../utilities/Logger.h"
 
 Application::Application() :
-        window(nullptr),
-        renderer(nullptr),
+        _window(nullptr),
+        _renderer(nullptr),
         _quit(false) {
     _windowTitle = "CBit 2D Application";
     _windowWidth = 640;
@@ -23,8 +23,8 @@ Application::Application() :
 }
 
 Application::Application(const char *windowTitle) :
-        window(nullptr),
-        renderer(nullptr),
+        _window(nullptr),
+        _renderer(nullptr),
         _quit(false) {
     _windowTitle = windowTitle;
     _windowWidth = 640;
@@ -32,8 +32,8 @@ Application::Application(const char *windowTitle) :
 }
 
 Application::Application(const char *windowTitle, int windowWidth, int windowHeight) :
-        window(nullptr),
-        renderer(nullptr),
+        _window(nullptr),
+        _renderer(nullptr),
         _quit(false) {
     _windowTitle = windowTitle;
     _windowWidth = windowWidth;
@@ -55,52 +55,59 @@ bool Application::init() {
     }
     LOG_INFO("SDL initialized successfully");
 
-    window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
-                              _windowHeight,
-                              SDL_WINDOW_SHOWN);
-    if (window == nullptr) {
+    _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
+                               _windowHeight,
+                               SDL_WINDOW_SHOWN);
+    if (_window == nullptr) {
         LOG_ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
         return false;
     }
     LOG_INFO("Window created successfully");
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == nullptr) {
+    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+    if (_renderer == nullptr) {
         LOG_ERROR("Renderer could not be created! SDL_Error: {}", SDL_GetError());
-        SDL_DestroyWindow(window);
+        SDL_DestroyWindow(_window);
         return false;
     }
 
     return true;
 }
 
+void Application::handleInput() {
+    while (SDL_PollEvent(&_event) != 0) {
+        _sceneManager.handleInput(_event);
+        if (_event.type == SDL_QUIT) {
+            _quit = true;
+        }
+    }
+}
+
 void Application::run() {
     while (!_quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                _quit = true;
-            }
-        }
+        handleInput();
 
         _sceneManager.update();
 
-        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderClear(_renderer);
 
         _sceneManager.render();
 
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(_renderer);
     }
 }
 
 void Application::cleanup() {
-    if (renderer != nullptr) {
-        SDL_DestroyRenderer(renderer);
-        renderer = nullptr;
+    _sceneManager.cleanup();
+
+    if (_renderer != nullptr) {
+        SDL_DestroyRenderer(_renderer);
+        _renderer = nullptr;
     }
-    if (window != nullptr) {
-        SDL_DestroyWindow(window);
-        window = nullptr;
+    if (_window != nullptr) {
+        SDL_DestroyWindow(_window);
+        _window = nullptr;
     }
     SDL_Quit();
     LOG_INFO("SDL _quit");
