@@ -1,0 +1,19 @@
+{
+  "name": "cbit2d",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nurakmaljalil91/Cbit2d.git"
+  },
+  "private": true,
+  "dependencies": {
+    "spdlog": "https://github.com/gabime/spdlog.git",
+    "SDL2": "https://github.com/libsdl-org/SDL.git@SDL2",
+    "entt": "https://github.com/skypjack/entt.git"
+  }
+}
