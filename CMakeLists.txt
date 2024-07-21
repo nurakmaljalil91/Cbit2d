@@ -35,6 +35,10 @@ include_directories(${SDL2_IMAGE_PATH}/include)
 link_directories(${SDL2_IMAGE_PATH}/lib)
 file(COPY ${SDL2_IMAGE_PATH}/bin/SDL2_image.dll DESTINATION ${CMAKE_BINARY_DIR})
 
+# Copy all files in the resources folder
+file(GLOB RESOURCES_FILES ${CMAKE_SOURCE_DIR}/application/resources/*)
+file(COPY ${RESOURCES_FILES} DESTINATION ${CMAKE_BINARY_DIR}/resources)
+
 # Create a shared library
 add_library(Cbit2d SHARED
         src/core/Application.cpp
