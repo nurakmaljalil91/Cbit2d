@@ -48,7 +48,9 @@ add_library(Cbit2d SHARED
         src/core/Scene.cpp
         src/core/Scene.h
         src/core/SceneManager.cpp
-        src/core/SceneManager.h)
+        src/core/SceneManager.h
+        src/core/Components.h
+)
 
 # Create an executable
 add_executable(Cbit2dApp application/src/main.cpp
@@ -60,8 +62,10 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/Scene.h
         src/core/SceneManager.cpp
         src/core/SceneManager.h
+        src/core/Components.h
         application/src/scenes/CustomScene.cpp
-        application/src/scenes/CustomScene.h)
+        application/src/scenes/CustomScene.h
+)
 
 # Link SDL2 library for the library
 target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
@@ -90,17 +94,28 @@ install(TARGETS Cbit2d
         LIBRARY DESTINATION lib           # for shared libraries
         ARCHIVE DESTINATION lib)          # for static libraries and import libraries
 
-# Install header and source files
-install(FILES src/core/Application.h src/core/Application.cpp DESTINATION include/cbit2d/core)
-install(FILES src/core/Scene.h src/core/Scene.cpp DESTINATION include/cbit2d/core)
-install(FILES src/core/SceneManager.h src/core/SceneManager.cpp DESTINATION include/cbit2d/core)
-install(FILES src/utilities/Logger.h src/utilities/Logger.cpp DESTINATION include/cbit2d/utilities)
+# Install core header and source files to include/cbit2d/core
+install(FILES
+        src/core/Application.h
+        src/core/Application.cpp
+        src/core/Scene.h
+        src/core/Scene.cpp
+        src/core/SceneManager.h
+        src/core/SceneManager.cpp
+        src/core/Components.h
+        DESTINATION include/cbit2d/core)
 
-# Export the targets to a script
-install(EXPORT Cbit2dTargets
-        FILE Cbit2dTargets.cmake
-        NAMESPACE Cbit2d::
-        DESTINATION lib/cmake/Cbit2d)
+# Install core header and source files to include/cbit2d/core
+file(GLOB CORE_FILES
+        "src/core/*.h"
+        "src/core/*.cpp")
+install(FILES ${CORE_FILES} DESTINATION include/cbit2d/core)
+
+# Install utilities header and source files to include/cbit2d/utilities
+file(GLOB UTILITIES_FILES
+        "src/utilities/*.h"
+        "src/utilities/*.cpp")
+install(FILES ${UTILITIES_FILES} DESTINATION include/cbit2d/utilities)
 
 # Create and install a package configuration file
 include(CMakePackageConfigHelpers)

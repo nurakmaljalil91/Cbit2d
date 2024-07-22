@@ -71,28 +71,31 @@ bool Application::init() {
         return false;
     }
 
-    return true;
-}
-
-void Application::handleInput() {
-    while (SDL_PollEvent(&_event) != 0) {
-        _sceneManager.handleInput(_event);
-        if (_event.type == SDL_QUIT) {
-            _quit = true;
-        }
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        LOG_ERROR("SDL_image could not initialize! SDL_image Error: {}", IMG_GetError());
+        return false;
     }
+
+    _sceneManager.setup(_renderer);
+
+    return true;
 }
 
 void Application::run() {
     while (!_quit) {
-        handleInput();
+        while (SDL_PollEvent(&_event) != 0) {
+            _sceneManager.handleInput(_event);
+            if (_event.type == SDL_QUIT) {
+                _quit = true;
+            }
+        }
 
         _sceneManager.update();
 
         SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(_renderer);
 
-        _sceneManager.render();
+        _sceneManager.render(_renderer);
 
         SDL_RenderPresent(_renderer);
     }

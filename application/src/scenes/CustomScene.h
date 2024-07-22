@@ -7,16 +7,22 @@
 
 #include "../../src/core/Scene.h"
 
-class CustomScene: public Scene {
+class CustomScene : public Scene {
 public:
     CustomScene();
+
     ~CustomScene();
 
-    void init();
+    void setup(SDL_Renderer *renderer);
+
     void update();
-    void render();
+
     void handleInput(SDL_Event event);
+
     void cleanup();
+
+private:
+    entt::entity _image;
 };
 
 

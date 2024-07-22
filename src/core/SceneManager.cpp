@@ -12,54 +12,54 @@
 #include "SceneManager.h"
 
 SceneManager::SceneManager() {
-    init();
+    _currentScene = nullptr;
 }
 
 SceneManager::~SceneManager() {
     cleanup();
 }
 
-void SceneManager::init() {
-    currentScene = nullptr;
+void SceneManager::setup(SDL_Renderer *renderer) {
+    _renderer = renderer;
 }
 
 void SceneManager::update() {
-    if (currentScene) {
-        currentScene->update();
+    if (_currentScene) {
+        _currentScene->update();
     }
 }
 
-void SceneManager::render() {
-    if (currentScene) {
-        currentScene->render();
+void SceneManager::render(SDL_Renderer* renderer) {
+    if (_currentScene) {
+        _currentScene->render(renderer);
     }
 }
 
 void SceneManager::handleInput(SDL_Event event) {
-    if (currentScene) {
-        currentScene->handleInput(event);
+    if (_currentScene) {
+        _currentScene->handleInput(event);
     }
 }
 
 void SceneManager::cleanup() {
-    if (currentScene) {
-        currentScene->cleanup();
+    if (_currentScene) {
+        _currentScene->cleanup();
     }
 }
 
 void SceneManager::addScene(const std::string &name, std::shared_ptr<Scene> scene) {
-    scenes[name] = scene;
+    _scenes[name] = scene;
 }
 
 void SceneManager::switchTo(const std::string &name) {
-    if (scenes.find(name) != scenes.end()) {
-        currentScene = scenes[name];
+    if (_scenes.find(name) != _scenes.end()) {
+        _currentScene = _scenes[name];
     }
 }
 
 void SceneManager::setCurrentScene(const std::string &name) {
-    if (scenes.find(name) != scenes.end()) {
-        currentScene = scenes[name];
-        currentScene->init();
+    if (_scenes.find(name) != _scenes.end()) {
+        _currentScene = _scenes[name];
+        _currentScene->setup(_renderer);
     }
 }

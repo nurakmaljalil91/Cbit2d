@@ -13,6 +13,7 @@
 
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "SceneManager.h"
 
 class Application {
@@ -46,8 +47,6 @@ private:
     SDL_Event _event;
 
     SceneManager _sceneManager;
-
-    void handleInput();
 };
 
 #endif //CBIT2D_APPLICATION_H

@@ -24,23 +24,26 @@ public:
 
     ~SceneManager();
 
-    void init();
+    void setup(SDL_Renderer *renderer);
 
     void update();
 
-    void render();
+    void render(SDL_Renderer* renderer);
 
     void handleInput(SDL_Event event);
 
     void cleanup();
 
-    void addScene(const std::string& name, std::shared_ptr<Scene> scene);
-    void switchTo(const std::string& name);
-    void setCurrentScene(const std::string& name);
+    void addScene(const std::string &name, std::shared_ptr<Scene> scene);
+
+    void switchTo(const std::string &name);
+
+    void setCurrentScene(const std::string &name);
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<Scene>> scenes;
-    std::shared_ptr<Scene> currentScene;
+    std::unordered_map<std::string, std::shared_ptr<Scene>> _scenes;
+    std::shared_ptr<Scene> _currentScene;
+    SDL_Renderer *_renderer;
 };
 
 

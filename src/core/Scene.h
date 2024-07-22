@@ -15,6 +15,9 @@
 
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include "../utilities/Logger.h."
+#include "Components.h"
 
 class Scene {
 public:
@@ -22,18 +25,20 @@ public:
 
     virtual ~Scene();
 
-    virtual void init();
+    virtual void setup(SDL_Renderer *renderer);
 
     virtual void update();
 
-    virtual void render();
+    virtual void render(SDL_Renderer *renderer);
 
     virtual void handleInput(SDL_Event event);
 
     virtual void cleanup();
 
 protected:
-    entt::registry registry;
+    entt::registry _registry;
+
+    SDL_Texture *_loadTexture(SDL_Renderer *renderer, const char *path);
 };
 
 
