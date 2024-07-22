@@ -70,14 +70,14 @@ def build_and_install(name):
     cmake_build_command_for_sdl_image = (
         f"cmake -B_builds "
         f"-DCMAKE_INSTALL_PREFIX=\"../../vendors/{name}\" "
-        f"-DSDL2_LIBRARY=\"../../vendors/SDL2/lib/libSDL2.a\" "
+        f"-DSDL2_LIBRARY=\"../../vendors/SDL2/lib\" "
         f"-DSDL2_INCLUDE_DIR=\"../../vendors/SDL2/include/SDL2\" "
-        f"-DSDL2MAIN_LIBRARY=\"../../vendors/SDL2/lib/libSDL2main.a\" "
+        # f"-DSDL2MAIN_LIBRARY=\"../../vendors/SDL2/lib/libSDL2main.a\" "
         f"-G \"MinGW Makefiles\" "
         f"-DCMAKE_CXX_STANDARD=17"
     )
 
-    if (name == 'SDL_Image'):
+    if (name == 'SDL_Image' or name == 'SDL_ttf'):
         run_command(cmake_build_command_for_sdl_image)
     else:
         run_command(cmake_build_command)

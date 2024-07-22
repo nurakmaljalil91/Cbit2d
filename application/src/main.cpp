@@ -12,19 +12,20 @@
  * @date 2024-07-20
  */
 #include "../../src/core/Application.h"
-#include "scenes/CustomScene.h"
+#include "scenes/MenuScene.h"
+#include "scenes/PlayScene.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
+
     Application app("CBit 2D Application", 800, 600);
 
     if (!app.init()) {
         return -1;
     }
 
-    auto customScene = std::make_shared<CustomScene>();
-
-    app.getSceneManager().addScene("CustomScene",customScene);
-    app.getSceneManager().setCurrentScene("CustomScene");
+    app.getSceneManager().addScene("MenuScene", std::make_shared<MenuScene>());
+    app.getSceneManager().addScene("PlayScene", std::make_shared<PlayScene>());
+    app.getSceneManager().setActiveScene("MenuScene");
 
     app.run();
 

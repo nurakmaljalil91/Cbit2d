@@ -15,6 +15,7 @@
     "spdlog": "https://github.com/gabime/spdlog.git",
     "SDL2": "https://github.com/libsdl-org/SDL.git@SDL2",
     "SDL_Image": "https://github.com/libsdl-org/SDL_image.git@SDL2",
+    "SDL_ttf": "https://github.com/libsdl-org/SDL_ttf.git@SDL2",
     "entt": "https://github.com/skypjack/entt.git"
   }
 }

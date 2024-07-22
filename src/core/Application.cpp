@@ -76,6 +76,11 @@ bool Application::init() {
         return false;
     }
 
+    if (TTF_Init() == -1) {
+        LOG_ERROR("SDL_ttf could not initialize! TTF_Error: {}", TTF_GetError());
+        return false;
+    }
+
     _sceneManager.setup(_renderer);
 
     return true;
@@ -92,7 +97,7 @@ void Application::run() {
 
         _sceneManager.update();
 
-        SDL_SetRenderDrawColor(_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(_renderer);
 
         _sceneManager.render(_renderer);
@@ -112,6 +117,9 @@ void Application::cleanup() {
         SDL_DestroyWindow(_window);
         _window = nullptr;
     }
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
     LOG_INFO("SDL _quit");
 }
+

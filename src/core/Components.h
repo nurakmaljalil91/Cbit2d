@@ -20,6 +20,14 @@ struct SpriteComponent {
     SDL_Rect destRect;
 };
 
+struct TextComponent {
+    std::string text;
+    SDL_Color color;
+    TTF_Font* font;
+    SDL_Texture* texture;
+    int width, height;
+};
+
 
 
 #endif //CBIT2D_COMPONENTS_H

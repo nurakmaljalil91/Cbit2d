@@ -38,7 +38,7 @@ public:
 
     void switchTo(const std::string &name);
 
-    void setCurrentScene(const std::string &name);
+    void setActiveScene(const std::string &name);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Scene>> _scenes;

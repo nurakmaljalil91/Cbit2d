@@ -14,6 +14,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "SceneManager.h"
 
 class Application {
@@ -36,7 +37,6 @@ public:
         return _sceneManager;
     }
 
-
 private:
     SDL_Window *_window;
     const char *_windowTitle;
@@ -45,7 +45,6 @@ private:
     SDL_Renderer *_renderer;
     bool _quit;
     SDL_Event _event;
-
     SceneManager _sceneManager;
 };
 
