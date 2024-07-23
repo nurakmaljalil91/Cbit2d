@@ -6,6 +6,8 @@
 #define CBIT2D_COMPONENTS_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 struct TransformComponent {
     int x;
@@ -26,6 +28,9 @@ struct TextComponent {
     SDL_Color color;
 };
 
+struct BgmComponent {
+    Mix_Music *bgm;
+};
 
 
 #endif //CBIT2D_COMPONENTS_H

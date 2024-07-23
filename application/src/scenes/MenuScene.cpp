@@ -3,6 +3,7 @@
 //
 
 #include "MenuScene.h"
+#include <SDL2/SDL_mixer.h>
 
 MenuScene::MenuScene() : Scene() {
 
@@ -27,6 +28,14 @@ void MenuScene::setup(SDL_Renderer *renderer) {
 //    _registry.emplace<TransformComponent>(_playButton, 0, 0, 100, 100);
 //    SDL_Texture *texture = _loadTexture(renderer, "resources/images/test.png");
 //    _registry.emplace<SpriteComponent>(_playButton, texture, SDL_Rect{0, 0, 100, 100}, SDL_Rect{100, 100, 100, 100});
+
+//    _bgm = _registry.create();
+    Mix_Music *bgm = Mix_LoadMUS("resources/audio/easy-cheesy-bgm.mp3");
+    if (bgm == nullptr) {
+        LOG_ERROR("Failed to load bgm: %s", Mix_GetError());
+    }
+//    _registry.emplace<BgmComponent>(_bgm, bgm);
+    Mix_PlayMusic(bgm, -1);
 }
 
 void MenuScene::update() {

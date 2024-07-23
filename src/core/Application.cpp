@@ -48,21 +48,29 @@ Application::~Application() {
 
 bool Application::init() {
     Logger::init();
-    LOG_INFO("Starting SDL2 application");
+    LOG_INFO("Starting Cbit 2D application");
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         LOG_ERROR("SDL could not initialize! SDL_Error: {}", SDL_GetError());
         return false;
     }
+
     LOG_INFO("SDL initialized successfully");
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
+        LOG_ERROR("SDL_mixer could not initialize! SDL_mixer Error: {}", Mix_GetError());
+        return false;
+    }
 
     _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
                                _windowHeight,
                                SDL_WINDOW_SHOWN);
+
     if (_window == nullptr) {
         LOG_ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
         return false;
     }
+
     LOG_INFO("Window created successfully");
 
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
@@ -146,6 +154,7 @@ void Application::cleanup() {
         SDL_DestroyWindow(_window);
         _window = nullptr;
     }
+    Mix_CloseAudio();
     TTF_CloseFont(_defaultFont);
     TTF_Quit();
     IMG_Quit();

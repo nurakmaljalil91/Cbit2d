@@ -77,7 +77,7 @@ def build_and_install(name):
         f"-DCMAKE_CXX_STANDARD=17"
     )
 
-    if (name == 'SDL_Image' or name == 'SDL_ttf'):
+    if (name == 'SDL_image' or name == 'SDL_ttf' or name == 'SDL_mixer'):
         run_command(cmake_build_command_for_sdl_image)
     else:
         run_command(cmake_build_command)

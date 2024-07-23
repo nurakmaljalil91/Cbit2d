@@ -29,7 +29,7 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
 # Set SDL2_image path
-set(SDL2_IMAGE_PATH vendors/SDL_Image)
+set(SDL2_IMAGE_PATH vendors/SDL_image)
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SDL2_IMAGE_PATH})
 include_directories(${SDL2_IMAGE_PATH}/include)
 link_directories(${SDL2_IMAGE_PATH}/lib)
@@ -41,6 +41,13 @@ set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SDL2_TTF_PATH})
 include_directories(${SDL2_TTF_PATH}/include)
 link_directories(${SDL2_TTF_PATH}/lib)
 file(COPY ${SDL2_TTF_PATH}/bin/SDL2_ttf.dll DESTINATION ${CMAKE_BINARY_DIR})
+
+# set SDL2_mixer path
+set(SDL2_MIXER_PATH vendors/SDL_mixer)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${SDL2_MIXER_PATH})
+include_directories(${SDL2_MIXER_PATH}/include)
+link_directories(${SDL2_MIXER_PATH}/lib)
+file(COPY ${SDL2_MIXER_PATH}/bin/SDL2_mixer.dll DESTINATION ${CMAKE_BINARY_DIR})
 
 # Copy all files in the resources folder
 file(GLOB RESOURCES_FILES ${CMAKE_SOURCE_DIR}/application/resources/*)
@@ -81,10 +88,10 @@ add_executable(Cbit2dApp application/src/main.cpp
 )
 
 # Link SDL2 library for the library
-target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image SDL2_ttf spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
+target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image SDL2_ttf SDL2_mixer spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
 
 # Link SDL2 library for the executable
-target_link_libraries(Cbit2dApp PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image SDL2_ttf spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
+target_link_libraries(Cbit2dApp PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image SDL2_ttf SDL2_mixer spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
 
 # Set linker flags for console application
 set_target_properties(Cbit2dApp PROPERTIES
