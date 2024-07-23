@@ -51,6 +51,12 @@ void Scene::cleanup() {
         auto &sprite = view.get<SpriteComponent>(entity);
         SDL_DestroyTexture(sprite.texture);
     }
+
+    auto textView = _registry.view<TextComponent>();
+    for (auto entity: textView) {
+        auto &text = textView.get<TextComponent>(entity);
+        TTF_CloseFont(text.font);
+    }
     _registry.clear();
 }
 

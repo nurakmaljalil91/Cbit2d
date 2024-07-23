@@ -12,6 +12,7 @@
 #include <utility>
 #include "Application.h"
 #include "../utilities/Logger.h"
+#include "../utilities/LocalMachine.h"
 
 Application::Application() :
         _window(nullptr),
@@ -81,13 +82,21 @@ bool Application::init() {
         return false;
     }
 
+    _defaultFont = TTF_OpenFont(LocalMachine::getFontPath(), 24);
+    if (!_defaultFont) {
+        LOG_ERROR("Failed to load font: %s", TTF_GetError());
+    }
+
     _sceneManager.setup(_renderer);
 
     return true;
 }
 
 void Application::run() {
+    _lastFPSTime = SDL_GetTicks(); // Initialize the last FPS update time
+
     while (!_quit) {
+        Uint32 startTick = SDL_GetTicks();
         while (SDL_PollEvent(&_event) != 0) {
             _sceneManager.handleInput(_event);
             if (_event.type == SDL_QUIT) {
@@ -102,7 +111,27 @@ void Application::run() {
 
         _sceneManager.render(_renderer);
 
+        // Calculate FPS
+        _frameCount++;
+        Uint32 currentTick = SDL_GetTicks();
+        if (currentTick - _lastFPSTime >= 1000) { // Update FPS every second
+            _fps = _frameCount;
+            _frameCount = 0;
+            _lastFPSTime = currentTick;
+        }
+
+        // Display FPS
+        std::string fpsText = "FPS: " + std::to_string(_fps);
+        _renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
+
         SDL_RenderPresent(_renderer);
+
+        // Cap frame rate
+        Uint32 endTick = SDL_GetTicks();
+        Uint32 frameTime = endTick - startTick;
+        if (frameTime < 1000 / 60) { // Assuming a 60 FPS cap
+            SDL_Delay((1000 / 60) - frameTime);
+        }
     }
 }
 
@@ -117,9 +146,32 @@ void Application::cleanup() {
         SDL_DestroyWindow(_window);
         _window = nullptr;
     }
+    TTF_CloseFont(_defaultFont);
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
     LOG_INFO("SDL _quit");
+}
+
+void Application::_renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y,
+                                          SDL_Color color) {
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+    if (surface == nullptr) {
+        LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
+        return;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (texture == nullptr) {
+        LOG_ERROR("Unable to create texture from rendered text! SDL_Error: {}", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect dstRect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
 }
 

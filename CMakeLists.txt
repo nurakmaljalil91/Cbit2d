@@ -57,6 +57,8 @@ add_library(Cbit2d SHARED
         src/core/SceneManager.cpp
         src/core/SceneManager.h
         src/core/Components.h
+        src/utilities/LocalMachine.cpp
+        src/utilities/LocalMachine.h
 )
 
 # Create an executable
@@ -65,6 +67,8 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/Application.h
         src/utilities/Logger.cpp
         src/utilities/Logger.h
+        src/utilities/LocalMachine.cpp
+        src/utilities/LocalMachine.h
         src/core/Scene.cpp
         src/core/Scene.h
         src/core/SceneManager.cpp

@@ -46,6 +46,14 @@ private:
     bool _quit;
     SDL_Event _event;
     SceneManager _sceneManager;
+    TTF_Font* _defaultFont;
+
+    // FPS counter
+    Uint32 _frameCount = 0;
+    Uint32 _lastFPSTime = 0;
+    Uint32 _fps = 0;
+
+    void _renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };
 
 #endif //CBIT2D_APPLICATION_H
