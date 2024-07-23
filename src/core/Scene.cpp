@@ -26,9 +26,20 @@ void Scene::render(SDL_Renderer *renderer) {
     auto view = _registry.view<TransformComponent, SpriteComponent>();
     for (auto entity: view) {
         auto &position = view.get<TransformComponent>(entity);
-        auto &sprite = _registry.get<SpriteComponent>(entity);
+        auto &sprite = view.get<SpriteComponent>(entity);
+//        auto &text = view.get<TextComponent>(entity);
         SDL_Rect dstRect = {position.x, position.y, position.width, position.height};
         SDL_RenderCopy(renderer, sprite.texture, nullptr, &dstRect);
+//        LOG_INFO("rendering text with text: {}", text.text);
+//        renderText(renderer, text.text.c_str(), text.font, position.x, position.y, text.color);
+    }
+
+    auto textView = _registry.view<TransformComponent, TextComponent>();
+    for (auto entity: textView) {
+        auto &position = textView.get<TransformComponent>(entity);
+        auto &text = textView.get<TextComponent>(entity);
+        // LOG_INFO("Rendering text with text: {}", text.text);
+        renderText(renderer, text.text.c_str(), text.font, position.x, position.y, text.color);
     }
 }
 

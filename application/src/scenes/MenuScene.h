@@ -26,6 +26,7 @@ public:
 private:
     TTF_Font* _defaultFont;
     entt::entity _titleText;
+    entt::entity _playButton;
 };
 
 
