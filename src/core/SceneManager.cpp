@@ -11,16 +11,8 @@
 
 #include "SceneManager.h"
 
-SceneManager::SceneManager() {
-    _currentScene = nullptr;
-}
-
 SceneManager::~SceneManager() {
     cleanup();
-}
-
-void SceneManager::setup(SDL_Renderer *renderer) {
-    _renderer = renderer;
 }
 
 void SceneManager::update() {
@@ -49,20 +41,15 @@ void SceneManager::cleanup() {
 
 void SceneManager::addScene(const std::string &name, std::shared_ptr<Scene> scene) {
     _scenes[name] = scene;
-//    _scenes[name]->setSceneManage(this);
-}
-
-void SceneManager::switchTo(const std::string &name) {
-    if (_scenes.find(name) != _scenes.end()) {
-        _currentScene = _scenes[name];
-    }
 }
 
 void SceneManager::setActiveScene(const std::string &name) {
     if (_scenes.find(name) != _scenes.end()) {
         _currentScene = _scenes[name];
-        _currentScene->setup(_renderer);
+        _currentScene->setup();
     } else {
         LOG_ERROR("Scene with name {} not found", name);
     }
 }
+
+SceneManager::SceneManager() = default;

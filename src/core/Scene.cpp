@@ -11,13 +11,11 @@
 
 #include "Scene.h"
 
-Scene::Scene() {
-}
+Scene::Scene() = default;
 
-Scene::~Scene() {
-}
+Scene::~Scene() = default;
 
-void Scene::setup(SDL_Renderer *renderer) {}
+void Scene::setup() {}
 
 void Scene::update() {}
 

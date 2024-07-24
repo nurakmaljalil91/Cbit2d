@@ -27,7 +27,7 @@ public:
 
     virtual ~Scene();
 
-    virtual void setup(SDL_Renderer *renderer);
+    virtual void setup();
 
     virtual void update();
 

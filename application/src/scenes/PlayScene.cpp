@@ -4,13 +4,13 @@
 
 #include "PlayScene.h"
 
-PlayScene::PlayScene() {}
+PlayScene::PlayScene() = default;
 
-PlayScene::~PlayScene() {}
+PlayScene::~PlayScene() = default;
 
 
-void PlayScene::setup(SDL_Renderer *renderer) {
-    Scene::setup(renderer);
+void PlayScene::setup() {
+    Scene::setup();
 }
 
 void PlayScene::update() {

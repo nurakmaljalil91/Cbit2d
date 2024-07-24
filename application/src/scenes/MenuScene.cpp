@@ -4,37 +4,25 @@
 
 #include "MenuScene.h"
 #include <SDL2/SDL_mixer.h>
+#include "../../../src/core/SceneManager.h"
+#include "../../../src/core/AssetManager.h"
 
 MenuScene::MenuScene() : Scene() {
 
 }
 
-MenuScene::~MenuScene() {
+MenuScene::~MenuScene() = default;
 
-}
-
-void MenuScene::setup(SDL_Renderer *renderer) {
-//    _defaultFont = TTF_OpenFont("resources/fonts/JetBrainsMono-Regular.ttf", 24);
-//    if (!_defaultFont) {
-//        LOG_ERROR("Failed to load font: %s", TTF_GetError());
-//    }
-//
-//    _titleText = _registry.create();
-////    SDL_Texture* textTexture = _createTextTexture(renderer, "Menu Scene", _defaultFont, SDL_Color{255, 255, 255, 255}, 100, 50);
-//    _registry.emplace<TextComponent>(_titleText, "CBIT2D", _defaultFont, SDL_Color{255, 255, 255, 255});
-//    _registry.emplace<TransformComponent>(_titleText, 50, 50, 100, 50);
-//
-//    _playButton = _registry.create();
-//    _registry.emplace<TransformComponent>(_playButton, 0, 0, 100, 100);
-//    SDL_Texture *texture = _loadTexture(renderer, "resources/images/test.png");
-//    _registry.emplace<SpriteComponent>(_playButton, texture, SDL_Rect{0, 0, 100, 100}, SDL_Rect{100, 100, 100, 100});
-
-//    _bgm = _registry.create();
-    Mix_Music *bgm = Mix_LoadMUS("resources/audio/easy-cheesy-bgm.mp3");
-    if (bgm == nullptr) {
-        LOG_ERROR("Failed to load bgm: %s", Mix_GetError());
-    }
-//    _registry.emplace<BgmComponent>(_bgm, bgm);
+void MenuScene::setup() {
+    _titleText = _registry.create();
+    TTF_Font *defaultFont = AssetManager::getInstance().loadFont("JetBrainsMono-Regular", 32);
+    _registry.emplace<TextComponent>(_titleText, "CBIT2D", defaultFont, SDL_Color{255, 255, 255, 255});
+    _registry.emplace<TransformComponent>(_titleText, 50, 50, 100, 50);
+    _playButton = _registry.create();
+    _registry.emplace<TransformComponent>(_playButton, 200, 200, 100, 100);
+    SDL_Texture *texture = AssetManager::getInstance().loadTexture("sokoban_spritesheet");
+    _registry.emplace<SpriteComponent>(_playButton, texture, SDL_Rect{0, 0, 100, 100}, SDL_Rect{100, 100, 100, 100});
+    Mix_Music *bgm = AssetManager::getInstance().loadAudio("easy-cheesy-bgm");
     Mix_PlayMusic(bgm, -1);
 }
 
@@ -44,11 +32,17 @@ void MenuScene::update() {
 
 void MenuScene::render(SDL_Renderer *renderer) {
     Scene::render(renderer);
-//    renderText(renderer, "Hello, World!", _defaultFont, 50, 50, {255, 255, 255, 255});
 }
 
 void MenuScene::handleInput(SDL_Event event) {
     Scene::handleInput(event);
+    // change scene if click enter
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_RETURN) {
+            LOG_INFO("Changing scene to PlayScene");
+            SceneManager::getInstance().setActiveScene("PlayScene");
+        }
+    }
 }
 
 void MenuScene::cleanup() {

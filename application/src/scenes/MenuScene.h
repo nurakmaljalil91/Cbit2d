@@ -12,19 +12,19 @@ class MenuScene : public Scene {
 public:
     MenuScene();
 
-    ~MenuScene();
+    ~MenuScene() override;
 
-    void setup(SDL_Renderer *renderer);
+    void setup() override;
 
-    void update();
+    void update() override;
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer) override;
 
-    void handleInput(SDL_Event event);
+    void handleInput(SDL_Event event) override;
 
     void cleanup();
 private:
-    TTF_Font* _defaultFont;
+    TTF_Font* _defaultFont{};
     entt::entity _titleText;
     entt::entity _playButton;
     entt::entity _bgm;

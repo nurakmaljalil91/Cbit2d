@@ -12,17 +12,17 @@ class PlayScene : public Scene {
 public:
     PlayScene();
 
-    ~PlayScene();
+    ~PlayScene() override;
 
-    void setup(SDL_Renderer *renderer);
+    void setup() override;
 
-    void update();
+    void update() override;
 
-    void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer) override;
 
-    void handleInput(SDL_Event event);
+    void handleInput(SDL_Event event) override;
 
-    void cleanup();
+    void cleanup() override;
 
 };
 

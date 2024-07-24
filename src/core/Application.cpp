@@ -9,37 +9,18 @@
  * @date 2024-07-20
  */
 #include <iostream>
-#include <utility>
 #include "Application.h"
-#include "../utilities/Logger.h"
 #include "../utilities/LocalMachine.h"
-
-Application::Application() :
-        _window(nullptr),
-        _renderer(nullptr),
-        _quit(false) {
-    _windowTitle = "CBit 2D Application";
-    _windowWidth = 640;
-    _windowHeight = 480;
-}
-
-Application::Application(const char *windowTitle) :
-        _window(nullptr),
-        _renderer(nullptr),
-        _quit(false) {
-    _windowTitle = windowTitle;
-    _windowWidth = 640;
-    _windowHeight = 480;
-}
+#include "AssetManager.h"
 
 Application::Application(const char *windowTitle, int windowWidth, int windowHeight) :
+        _windowTitle(windowTitle),
+        _windowWidth(windowWidth),
+        _windowHeight(windowHeight),
         _window(nullptr),
         _renderer(nullptr),
-        _quit(false) {
-    _windowTitle = windowTitle;
-    _windowWidth = windowWidth;
-    _windowHeight = windowHeight;
-}
+        _quit(false),
+        _defaultFont(nullptr) {}
 
 
 Application::~Application() {
@@ -48,6 +29,8 @@ Application::~Application() {
 
 bool Application::init() {
     Logger::init();
+
+
     LOG_INFO("Starting Cbit 2D application");
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -95,7 +78,7 @@ bool Application::init() {
         LOG_ERROR("Failed to load font: %s", TTF_GetError());
     }
 
-    _sceneManager.setup(_renderer);
+    AssetManager::getInstance().init(_renderer);
 
     return true;
 }
@@ -106,18 +89,18 @@ void Application::run() {
     while (!_quit) {
         Uint32 startTick = SDL_GetTicks();
         while (SDL_PollEvent(&_event) != 0) {
-            _sceneManager.handleInput(_event);
+            SceneManager::getInstance().handleInput(_event);
             if (_event.type == SDL_QUIT) {
                 _quit = true;
             }
         }
 
-        _sceneManager.update();
+        SceneManager::getInstance().update();
 
         SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(_renderer);
 
-        _sceneManager.render(_renderer);
+        SceneManager::getInstance().render(_renderer);
 
         // Calculate FPS
         _frameCount++;
@@ -144,7 +127,8 @@ void Application::run() {
 }
 
 void Application::cleanup() {
-    _sceneManager.cleanup();
+    SceneManager::getInstance().cleanup();
+    AssetManager::getInstance().cleanup();
 
     if (_renderer != nullptr) {
         SDL_DestroyRenderer(_renderer);
