@@ -16,28 +16,31 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
+#include <functional>
 
 struct TransformComponent {
-    int x;
-    int y;
-    int width;
-    int height;
+    int x, y, width, height;
 };
 
 struct SpriteComponent {
-    SDL_Texture *texture;
-    SDL_Rect srcRect;
-    SDL_Rect destRect;
+    std::string textureName;
+    int x, y, width, height;
 };
 
 struct TextComponent {
     std::string text;
-    TTF_Font* font;
-    SDL_Color color;
+    std::string fontName;
+    int size;
+    int r, g, b, a;
 };
 
 struct BgmComponent {
     Mix_Music *bgm;
+};
+
+struct ButtonComponent {
+    std::function<void()> onClick;
+    bool isHover;
 };
 
 

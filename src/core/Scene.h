@@ -19,6 +19,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "../utilities/Logger.h."
 #include "Components.h"
+#include "AssetManager.h"
 
 class Scene {
 public:
@@ -26,34 +27,42 @@ public:
 
     virtual ~Scene();
 
+    // scene lifecycle
     virtual void setup();
 
     virtual void update();
 
-    virtual void render(SDL_Renderer *renderer);
+    void render(SDL_Renderer *renderer);
 
     virtual void handleInput(SDL_Event event);
 
-    virtual bool switchScene();
+    void cleanup();
 
-    virtual void changeScene(const std::string &name);
+    // handle scene change
+    bool switchScene() const;
 
-    virtual std::string getNextScene();
+    void changeScene(const std::string &name);
 
-    virtual void cleanup();
+    std::string getNextScene();
+
+    // debugging
+    /**
+     * @brief Toggle the debug mode.
+     */
+    void toggleDebug();
 
 protected:
     entt::registry _registry;
+
+    // manage scene
     bool _isChangeScene = false;
     std::string _nextScene;
 
-    SDL_Texture *_loadTexture(SDL_Renderer *renderer, const char *path);
+    // debugging
+    bool _isDebug = false;
 
-    SDL_Texture *
-    _createTextTexture(SDL_Renderer *renderer, const std::string &text, TTF_Font *font, SDL_Color color, int &width,
-                       int &height);
-
-    void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
+    void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
+                    SDL_Color color);
 };
 
 

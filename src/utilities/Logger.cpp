@@ -30,7 +30,7 @@ void Logger::init() {
 
         // Create the logger with both sinks
         spdlog::sinks_init_list sink_list = {console_sink, file_sink};
-        logger = std::make_shared<spdlog::logger>("logger", sink_list.begin(), sink_list.end());
+        logger = std::make_shared<spdlog::logger>("cbit2d", sink_list.begin(), sink_list.end());
         spdlog::register_logger(logger);
 
         // Set the logging level

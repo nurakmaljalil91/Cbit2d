@@ -34,6 +34,13 @@ void AssetManager::init(SDL_Renderer *renderer) {
         std::filesystem::create_directory("resources/audio");
     }
 
+    // check if the fonts folder exists
+    if (!std::filesystem::exists("resources/fonts")) {
+        LOG_ERROR("Fonts folder not found, fonts folder will be created.");
+        // create the fonts folder
+        std::filesystem::create_directory("resources/fonts");
+    }
+
 
     // iterate through the images folder and load all the image files
     for (const auto &entry: std::filesystem::directory_iterator("resources/images")) {
@@ -106,6 +113,7 @@ AssetManager &AssetManager::getInstance() {
 AssetManager::~AssetManager() = default;
 
 void AssetManager::cleanup() {
+    LOG_INFO(_textures.size());
     for (auto &texture: _textures) {
         SDL_DestroyTexture(texture.second);
     }
@@ -146,4 +154,6 @@ TTF_Font *AssetManager::loadFont(const std::string &filename, int size) {
 }
 
 
-AssetManager::AssetManager() = default;
+AssetManager::AssetManager() {
+    LOG_INFO("AssetManager initialized");
+}

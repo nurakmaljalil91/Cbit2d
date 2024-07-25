@@ -1,6 +1,13 @@
-//
-// Created by User on 22/7/2024.
-//
+/**
+ * @file MenuScene.h
+ * @brief Header file for the MenuScene class.
+ *
+ * This file contains the definition of the MenuScene class which is responsible for managing the menu scene in the game.
+ * The MenuScene class is responsible for setting up the menu scene, updating the menu scene, and handling input for the menu scene.
+ *
+ * @author Nur Akmal bin Jalil
+ * @date 2024-07-21
+ */
 
 #ifndef CBIT2D_MENUSCENE_H
 #define CBIT2D_MENUSCENE_H
@@ -18,16 +25,13 @@ public:
 
     void update() override;
 
-    void render(SDL_Renderer *renderer) override;
-
     void handleInput(SDL_Event event) override;
 
-    void cleanup();
 private:
-    TTF_Font* _defaultFont{};
     entt::entity _titleText;
+    entt::entity _sprite;
     entt::entity _playButton;
-    entt::entity _bgm;
+//    entt::entity _bgm;
 };
 
 

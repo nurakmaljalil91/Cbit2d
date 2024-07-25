@@ -1,37 +1,46 @@
-//
-// Created by User on 22/7/2024.
-//
+/**
+ * @file MenuScene.cpp
+ * @brief Implementation file for the MenuScene class.
+ *
+ * This file contains the implementation of the MenuScene class which is responsible for managing the menu scene in the game.
+ * The MenuScene class is responsible for setting up the menu scene, updating the menu scene, and handling input for the menu scene.
+ *
+ * @author Nur Akmal bin Jalil
+ * @date 2024-07-21
+ */
 
 #include "MenuScene.h"
 #include <SDL2/SDL_mixer.h>
-//#include "../../../src/core/SceneManager.h"
-#include "../../../src/core/AssetManager.h"
 
 MenuScene::MenuScene() : Scene() {
-
+    toggleDebug();
+    _titleText = _registry.create();
+    _sprite = _registry.create();
+    _playButton = _registry.create();
 }
 
 MenuScene::~MenuScene() = default;
 
 void MenuScene::setup() {
-    _titleText = _registry.create();
-    TTF_Font *defaultFont = AssetManager::getInstance().loadFont("JetBrainsMono-Regular", 32);
-    _registry.emplace<TextComponent>(_titleText, "CBIT2D", defaultFont, SDL_Color{255, 255, 255, 255});
+    _registry.emplace<TextComponent>(_titleText, "CBIT2D", "JetBrainsMono-Regular", 32, 255, 255, 255, 255);
     _registry.emplace<TransformComponent>(_titleText, 50, 50, 100, 50);
-    _playButton = _registry.create();
-    _registry.emplace<TransformComponent>(_playButton, 200, 200, 100, 100);
-    SDL_Texture *texture = AssetManager::getInstance().loadTexture("sokoban_spritesheet");
-    _registry.emplace<SpriteComponent>(_playButton, texture, SDL_Rect{0, 0, 100, 100}, SDL_Rect{100, 100, 100, 100});
-    Mix_Music *bgm = AssetManager::getInstance().loadAudio("easy-cheesy-bgm");
-    Mix_PlayMusic(bgm, -1);
+
+    _registry.emplace<TransformComponent>(_sprite, 200, 200, 64, 64);
+    _registry.emplace<SpriteComponent>(_sprite, "sokoban_spritesheet", 64, 64, 64, 64);
+
+    _registry.emplace<TransformComponent>(_playButton, 400, 400, 150, 50);
+    _registry.emplace<TextComponent>(_playButton, "Play", "Kenney_Future", 32, 255, 255, 255, 255);
+    _registry.emplace<ButtonComponent>(_playButton, [this]() {
+        LOG_INFO("Button clicked");
+        LOG_INFO("Changing scene to PlayScene");
+        changeScene("PlayScene");
+    });
+//    Mix_Music *bgm = AssetManager::getInstance().loadAudio("easy-cheesy-bgm");
+//    Mix_PlayMusic(bgm, -1);
 }
 
 void MenuScene::update() {
     Scene::update();
-}
-
-void MenuScene::render(SDL_Renderer *renderer) {
-    Scene::render(renderer);
 }
 
 void MenuScene::handleInput(SDL_Event event) {
@@ -40,12 +49,9 @@ void MenuScene::handleInput(SDL_Event event) {
     if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.sym == SDLK_RETURN) {
             LOG_INFO("Changing scene to PlayScene");
-            changeScene("Play2Scene");
-//            SceneManager::getInstance().setActiveScene("PlayScene");
+            changeScene("PlayScene");
         }
     }
 }
 
-void MenuScene::cleanup() {
-    Scene::cleanup();
-}
+

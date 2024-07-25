@@ -20,70 +20,83 @@ void Scene::setup() {}
 void Scene::update() {}
 
 void Scene::render(SDL_Renderer *renderer) {
-    auto view = _registry.view<TransformComponent, SpriteComponent>();
-    for (auto entity: view) {
-        auto &position = view.get<TransformComponent>(entity);
-        auto &sprite = view.get<SpriteComponent>(entity);
+    auto transformView = _registry.view<TransformComponent>();
+    for (auto entity: transformView) {
+        auto &transform = transformView.get<TransformComponent>(entity);
+        if (_isDebug) {
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            // draw the bounding box
+            SDL_Rect rect = {transform.x, transform.y, transform.width, transform.height};
+            SDL_RenderDrawRect(renderer, &rect);
+        }
+    }
+
+    auto spriteView = _registry.view<TransformComponent, SpriteComponent>();
+    for (auto entity: spriteView) {
+        auto &position = spriteView.get<TransformComponent>(entity);
+        auto &sprite = spriteView.get<SpriteComponent>(entity);
         SDL_Rect dstRect = {position.x, position.y, position.width, position.height};
-        SDL_RenderCopy(renderer, sprite.texture, nullptr, &dstRect);
+        SDL_Texture *texture = AssetManager::getInstance().loadTexture(sprite.textureName);
+        SDL_Rect srcRect = {sprite.x, sprite.y, sprite.width, sprite.height};
+        SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
     }
 
     auto textView = _registry.view<TransformComponent, TextComponent>();
     for (auto entity: textView) {
         auto &position = textView.get<TransformComponent>(entity);
         auto &text = textView.get<TextComponent>(entity);
-        renderText(renderer, text.text.c_str(), text.font, position.x, position.y, text.color);
+        TTF_Font *font = AssetManager::getInstance().loadFont(text.fontName, text.size);
+        SDL_Color color = {static_cast<Uint8>(text.r), static_cast<Uint8>(text.g), static_cast<Uint8>(text.b), static_cast<Uint8>(text.a)};
+        renderText(renderer, text.text.c_str(), font, position.x, position.y,position.width, position.height, color);
+    }
+
+    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
+    for (auto entity: buttonView) {
+        auto &position = buttonView.get<TransformComponent>(entity);
+        auto &button = buttonView.get<ButtonComponent>(entity);
+        if (button.isHover) {
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_Rect rect = {position.x, position.y, position.width, position.height};
+            SDL_RenderDrawRect(renderer, &rect);
+        }
     }
 }
 
-void Scene::handleInput(SDL_Event event) {}
+void Scene::handleInput(SDL_Event event) {
+    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
+    for (auto entity: buttonView) {
+        auto &button = buttonView.get<ButtonComponent>(entity);
+        auto &transform = buttonView.get<TransformComponent>(entity);
+        // hover
+        if (event.type == SDL_MOUSEMOTION) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
+                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
+                button.isHover = true;
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
+            } else {
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
+                button.isHover = false;
+            }
+        }
+
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
+                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
+                button.onClick();
+            }
+        }
+    }
+}
 
 void Scene::cleanup() {
-    auto view = _registry.view<SpriteComponent>();
-    for (auto entity: view) {
-        auto &sprite = view.get<SpriteComponent>(entity);
-        SDL_DestroyTexture(sprite.texture);
-    }
-
-    auto textView = _registry.view<TextComponent>();
-    for (auto entity: textView) {
-        auto &text = textView.get<TextComponent>(entity);
-        TTF_CloseFont(text.font);
-    }
     _registry.clear();
 }
 
-SDL_Texture *Scene::_loadTexture(SDL_Renderer *renderer, const char *path) {
-    SDL_Texture *texture = IMG_LoadTexture(renderer, path);
-    if (texture == nullptr) {
-        LOG_ERROR("Unable to load texture {}! SDL_image Error: {}", path, IMG_GetError());
-    }
-    return texture;
-}
-
-SDL_Texture *
-Scene::_createTextTexture(SDL_Renderer *renderer, const std::string &text, TTF_Font *font, SDL_Color color, int &width,
-                          int &height) {
-    SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), color);
-    if (surface == nullptr) {
-        LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
-        return nullptr;
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (texture == nullptr) {
-        LOG_ERROR("Unable to create texture from rendered text! SDL_Error: {}", SDL_GetError());
-        SDL_FreeSurface(surface);
-        return nullptr;
-    }
-
-    width = surface->w;
-    height = surface->h;
-    SDL_FreeSurface(surface);
-    return texture;
-}
-
-void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color) {
+void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y,int width, int height, SDL_Color color) {
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     if (surface == nullptr) {
         LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
@@ -97,14 +110,21 @@ void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font,
         return;
     }
 
-    SDL_Rect dstRect = {x, y, surface->w, surface->h};
+
+    // Calculate the center position
+    int textWidth = surface->w;
+    int textHeight = surface->h;
+    int centerX = x + (width - textWidth) / 2;
+    int centerY = y + (height - textHeight) / 2;
+
+    SDL_Rect dstRect = {centerX, centerY, textWidth, textHeight};
     SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
 }
 
-bool Scene::switchScene() {
+bool Scene::switchScene() const {
     return _isChangeScene;
 }
 
@@ -116,5 +136,9 @@ void Scene::changeScene(const std::string &name) {
 std::string Scene::getNextScene() {
     _isChangeScene = false;
     return _nextScene;
+}
+
+void Scene::toggleDebug() {
+    _isDebug = !_isDebug;
 }
 
