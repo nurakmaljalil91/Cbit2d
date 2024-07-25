@@ -53,7 +53,8 @@ void AssetManager::init(SDL_Renderer *renderer) {
             }
 
             std::string filePath = entry.path().string();
-            std::string fileName = entry.path().stem().string(); // Get file name without extension
+            std::string relativePath = std::filesystem::relative(entry.path(), "resources/images").string();
+            std::string fileName = relativePath.substr(0, relativePath.find_last_of('.')); // Get relative path without extension
             SDL_Surface *surface = IMG_Load(filePath.c_str());
             if (surface == nullptr) {
                 LOG_ERROR("Failed to load image: %s", IMG_GetError());
@@ -78,7 +79,8 @@ void AssetManager::init(SDL_Renderer *renderer) {
             }
 
             std::string filePath = entry.path().string();
-            std::string fileName = entry.path().stem().string(); // Get file name without extension
+            std::string relativePath = std::filesystem::relative(entry.path(), "resources/audio").string();
+            std::string fileName = relativePath.substr(0, relativePath.find_last_of('.')); // Get relative path without extension
             Mix_Music *audio = Mix_LoadMUS(filePath.c_str());
             if (audio == nullptr) {
                 LOG_ERROR("Failed to load audio: %s", Mix_GetError());
@@ -98,7 +100,8 @@ void AssetManager::init(SDL_Renderer *renderer) {
             }
 
             std::string filePath = entry.path().string();
-            std::string fileName = entry.path().stem().string(); // Get file name without extension
+            std::string relativePath = std::filesystem::relative(entry.path(), "resources/fonts").string();
+            std::string fileName = relativePath.substr(0, relativePath.find_last_of('.')); // Get relative path without extension
 
             _fonts[fileName] = filePath;
         }
