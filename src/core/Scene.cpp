@@ -22,6 +22,32 @@ void Scene::setup() {
 void Scene::update() {}
 
 void Scene::render(SDL_Renderer *renderer) {
+    // Set the background color
+    if (_isBackgroundColorSet) {
+        SDL_SetRenderDrawColor(renderer, _backgroundColor.r, _backgroundColor.g, _backgroundColor.b, _backgroundColor.a);
+        SDL_RenderClear(renderer);
+    }
+
+    // Render debug grid if _isDebug is true
+    if (_isDebug) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color for grid lines
+        int gridSize = 64;
+
+        // Get the window size
+        int windowWidth, windowHeight;
+        SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
+
+        // Draw vertical lines
+        for (int x = 0; x < windowWidth; x += gridSize) {
+            SDL_RenderDrawLine(renderer, x, 0, x, windowHeight);
+        }
+
+        // Draw horizontal lines
+        for (int y = 0; y < windowHeight; y += gridSize) {
+            SDL_RenderDrawLine(renderer, 0, y, windowWidth, y);
+        }
+    }
+
     auto transformView = _registry.view<TransformComponent>();
     for (auto entity: transformView) {
         auto &transform = transformView.get<TransformComponent>(entity);
@@ -66,6 +92,13 @@ void Scene::render(SDL_Renderer *renderer) {
 }
 
 void Scene::handleInput(SDL_Event event) {
+    // if debug mode is on, log the coordinates of the mouse when clicked
+    if (_isDebug && event.type == SDL_MOUSEBUTTONDOWN) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
+    }
+
     auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
     for (auto entity: buttonView) {
         auto &button = buttonView.get<ButtonComponent>(entity);
@@ -144,5 +177,10 @@ std::string Scene::getNextScene() {
 
 void Scene::toggleDebug() {
     _isDebug = !_isDebug;
+}
+
+void Scene::setBackgroundColour(Color color) {
+    _backgroundColor = color;
+    _isBackgroundColorSet = true;
 }
 

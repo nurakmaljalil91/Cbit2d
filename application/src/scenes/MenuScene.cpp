@@ -20,6 +20,8 @@ MenuScene::~MenuScene() = default;
 void MenuScene::setup() {
     Scene::setup();
     toggleDebug();
+    // set background color to yellow
+    setBackgroundColour(Color{234, 226, 168, 255});
     _titleText = _registry.create();
     _sprite = _registry.create();
     _playButton = _registry.create();

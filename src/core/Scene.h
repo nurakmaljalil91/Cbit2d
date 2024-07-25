@@ -57,12 +57,15 @@ protected:
 
     void toggleDebug();
 
+    // background color
+    Color _backgroundColor = {0, 0, 0, 255};
+    bool _isBackgroundColorSet = false;
+
+    void setBackgroundColour(Color color);
+
     void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
                     SDL_Color color);
-    int _r, _g, _b, _a;
-
-    void setBackground(SDL_Renderer *renderer, const char *textureName);
-    void setBackgroundColour(SDL_Renderer *renderer, SDL_Color color);
+    
 };
 
 
