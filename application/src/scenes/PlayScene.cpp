@@ -23,6 +23,14 @@ void PlayScene::render(SDL_Renderer *renderer) {
 
 void PlayScene::handleInput(SDL_Event event) {
     Scene::handleInput(event);
+    // change scene if click enter
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_RETURN) {
+            LOG_INFO("Changing scene to PlayScene");
+            changeScene("MenuScene");
+//            SceneManager::getInstance().setActiveScene("PlayScene");
+        }
+    }
 }
 
 void PlayScene::cleanup() {

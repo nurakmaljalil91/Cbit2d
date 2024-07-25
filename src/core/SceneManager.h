@@ -20,13 +20,10 @@
 
 class SceneManager {
 public:
-    static SceneManager &getInstance() {
-        static SceneManager instance;
-        return instance;
-    }
+    SceneManager();
 
     ~SceneManager();
-    
+
     void update();
 
     void render(SDL_Renderer *renderer);
@@ -40,8 +37,6 @@ public:
     void setActiveScene(const std::string &name);
 
 private:
-    SceneManager();
-
     std::unordered_map<std::string, std::shared_ptr<Scene>> _scenes;
     std::shared_ptr<Scene> _currentScene;
 };

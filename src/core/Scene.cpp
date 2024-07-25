@@ -20,23 +20,18 @@ void Scene::setup() {}
 void Scene::update() {}
 
 void Scene::render(SDL_Renderer *renderer) {
-//    LOG_INFO("Rendering scene");
     auto view = _registry.view<TransformComponent, SpriteComponent>();
     for (auto entity: view) {
         auto &position = view.get<TransformComponent>(entity);
         auto &sprite = view.get<SpriteComponent>(entity);
-//        auto &text = view.get<TextComponent>(entity);
         SDL_Rect dstRect = {position.x, position.y, position.width, position.height};
         SDL_RenderCopy(renderer, sprite.texture, nullptr, &dstRect);
-//        LOG_INFO("rendering text with text: {}", text.text);
-//        renderText(renderer, text.text.c_str(), text.font, position.x, position.y, text.color);
     }
 
     auto textView = _registry.view<TransformComponent, TextComponent>();
     for (auto entity: textView) {
         auto &position = textView.get<TransformComponent>(entity);
         auto &text = textView.get<TextComponent>(entity);
-        // LOG_INFO("Rendering text with text: {}", text.text);
         renderText(renderer, text.text.c_str(), text.font, position.x, position.y, text.color);
     }
 }
@@ -69,13 +64,13 @@ SDL_Texture *Scene::_loadTexture(SDL_Renderer *renderer, const char *path) {
 SDL_Texture *
 Scene::_createTextTexture(SDL_Renderer *renderer, const std::string &text, TTF_Font *font, SDL_Color color, int &width,
                           int &height) {
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text.c_str(), color);
     if (surface == nullptr) {
         LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
         return nullptr;
     }
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     if (texture == nullptr) {
         LOG_ERROR("Unable to create texture from rendered text! SDL_Error: {}", SDL_GetError());
         SDL_FreeSurface(surface);
@@ -88,30 +83,38 @@ Scene::_createTextTexture(SDL_Renderer *renderer, const std::string &text, TTF_F
     return texture;
 }
 
-void Scene::renderText(SDL_Renderer *renderer, const char *text,TTF_Font* font, int x, int y, SDL_Color color) {
-    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
+void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color) {
+    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     if (surface == nullptr) {
         LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
         return;
     }
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     if (texture == nullptr) {
         LOG_ERROR("Unable to create texture from rendered text! SDL_Error: {}", SDL_GetError());
         SDL_FreeSurface(surface);
         return;
     }
 
-    SDL_Rect dstRect = { x, y, surface->w, surface->h };
+    SDL_Rect dstRect = {x, y, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
 }
 
+bool Scene::switchScene() {
+    return _isChangeScene;
+}
 
-//void Scene::setSceneManage(SceneManager *sceneManager) {
-//    _sceneManager = sceneManager;
-//}
+void Scene::changeScene(const std::string &name) {
+    _isChangeScene = true;
+    _nextScene = name;
+}
 
+std::string Scene::getNextScene() {
+    _isChangeScene = false;
+    return _nextScene;
+}
 

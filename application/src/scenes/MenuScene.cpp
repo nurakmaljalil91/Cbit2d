@@ -4,7 +4,7 @@
 
 #include "MenuScene.h"
 #include <SDL2/SDL_mixer.h>
-#include "../../../src/core/SceneManager.h"
+//#include "../../../src/core/SceneManager.h"
 #include "../../../src/core/AssetManager.h"
 
 MenuScene::MenuScene() : Scene() {
@@ -40,7 +40,8 @@ void MenuScene::handleInput(SDL_Event event) {
     if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.sym == SDLK_RETURN) {
             LOG_INFO("Changing scene to PlayScene");
-            SceneManager::getInstance().setActiveScene("PlayScene");
+            changeScene("Play2Scene");
+//            SceneManager::getInstance().setActiveScene("PlayScene");
         }
     }
 }

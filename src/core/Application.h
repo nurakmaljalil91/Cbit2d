@@ -30,6 +30,8 @@ public:
 
     void cleanup();
 
+    SceneManager &getSceneManager();
+
 private:
     SDL_Window *_window;
     const char *_windowTitle;
@@ -44,6 +46,9 @@ private:
     Uint32 _frameCount = 0;
     Uint32 _lastFPSTime = 0;
     Uint32 _fps = 0;
+
+    // manager
+    SceneManager _sceneManager;
 
     void _renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };

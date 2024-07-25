@@ -11,6 +11,8 @@
 
 #include "SceneManager.h"
 
+SceneManager::SceneManager() : _currentScene(nullptr) {}
+
 SceneManager::~SceneManager() {
     cleanup();
 }
@@ -22,6 +24,10 @@ void SceneManager::update() {
 }
 
 void SceneManager::render(SDL_Renderer *renderer) {
+    if (_currentScene->switchScene()){
+        setActiveScene(_currentScene->getNextScene());
+    }
+
     if (_currentScene) {
         _currentScene->render(renderer);
     }
@@ -52,4 +58,4 @@ void SceneManager::setActiveScene(const std::string &name) {
     }
 }
 
-SceneManager::SceneManager() = default;
+

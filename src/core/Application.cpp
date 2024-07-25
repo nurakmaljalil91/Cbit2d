@@ -89,18 +89,18 @@ void Application::run() {
     while (!_quit) {
         Uint32 startTick = SDL_GetTicks();
         while (SDL_PollEvent(&_event) != 0) {
-            SceneManager::getInstance().handleInput(_event);
+            _sceneManager.handleInput(_event);
             if (_event.type == SDL_QUIT) {
                 _quit = true;
             }
         }
 
-        SceneManager::getInstance().update();
+        _sceneManager.update();
 
         SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(_renderer);
 
-        SceneManager::getInstance().render(_renderer);
+        _sceneManager.render(_renderer);
 
         // Calculate FPS
         _frameCount++;
@@ -127,7 +127,7 @@ void Application::run() {
 }
 
 void Application::cleanup() {
-    SceneManager::getInstance().cleanup();
+    _sceneManager.cleanup();
     AssetManager::getInstance().cleanup();
 
     if (_renderer != nullptr) {
@@ -166,5 +166,9 @@ void Application::_renderApplicationTexts(SDL_Renderer *renderer, const char *te
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
+}
+
+SceneManager &Application::getSceneManager() {
+    return _sceneManager;
 }
 

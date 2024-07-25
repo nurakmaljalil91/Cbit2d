@@ -19,7 +19,6 @@
 #include <SDL2/SDL_ttf.h>
 #include "../utilities/Logger.h."
 #include "Components.h"
-//#include "SceneManager.h"
 
 class Scene {
 public:
@@ -35,12 +34,18 @@ public:
 
     virtual void handleInput(SDL_Event event);
 
-//    void setSceneManage(SceneManager *sceneManager);
+    virtual bool switchScene();
+
+    virtual void changeScene(const std::string &name);
+
+    virtual std::string getNextScene();
 
     virtual void cleanup();
 
 protected:
     entt::registry _registry;
+    bool _isChangeScene = false;
+    std::string _nextScene;
 
     SDL_Texture *_loadTexture(SDL_Renderer *renderer, const char *path);
 
@@ -48,7 +53,6 @@ protected:
     _createTextTexture(SDL_Renderer *renderer, const std::string &text, TTF_Font *font, SDL_Color color, int &width,
                        int &height);
 
-//    SceneManager *_sceneManager;
     void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };
 
