@@ -38,18 +38,12 @@ public:
 
     void cleanup();
 
-    // handle scene change
-    bool switchScene() const;
+    // handle scenes management (use by SceneManager)
+    [[nodiscard]] bool switchScene() const;
 
     void changeScene(const std::string &name);
 
     std::string getNextScene();
-
-    // debugging
-    /**
-     * @brief Toggle the debug mode.
-     */
-    void toggleDebug();
 
 protected:
     entt::registry _registry;
@@ -61,8 +55,14 @@ protected:
     // debugging
     bool _isDebug = false;
 
+    void toggleDebug();
+
     void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
                     SDL_Color color);
+    int _r, _g, _b, _a;
+
+    void setBackground(SDL_Renderer *renderer, const char *textureName);
+    void setBackgroundColour(SDL_Renderer *renderer, SDL_Color color);
 };
 
 

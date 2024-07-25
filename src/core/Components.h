@@ -13,10 +13,8 @@
 #ifndef CBIT2D_COMPONENTS_H
 #define CBIT2D_COMPONENTS_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
 #include <functional>
+#include "Type.h"
 
 struct TransformComponent {
     int x, y, width, height;
@@ -31,11 +29,7 @@ struct TextComponent {
     std::string text;
     std::string fontName;
     int size;
-    int r, g, b, a;
-};
-
-struct BgmComponent {
-    Mix_Music *bgm;
+    Color textColor;
 };
 
 struct ButtonComponent {

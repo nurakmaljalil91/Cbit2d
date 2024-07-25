@@ -29,7 +29,7 @@ void PlayScene::handleInput(SDL_Event event) {
     // change scene if click enter
     if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.sym == SDLK_RETURN) {
-            LOG_INFO("Changing scene to PlayScene");
+            LOG_INFO("Changing scene to MenuScene");
             changeScene("MenuScene");
         }
     }

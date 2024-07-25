@@ -68,6 +68,7 @@ add_library(Cbit2d SHARED
         src/utilities/LocalMachine.h
         src/core/AssetManager.cpp
         src/core/AssetManager.h
+        src/core/Type.h
 )
 
 # Create an executable
@@ -89,6 +90,7 @@ add_executable(Cbit2dApp application/src/main.cpp
         application/src/scenes/PlayScene.h
         src/core/AssetManager.cpp
         src/core/AssetManager.h
+        src/core/Type.h
 )
 
 # Link SDL2 library for the library

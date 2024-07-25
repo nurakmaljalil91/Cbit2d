@@ -15,7 +15,9 @@ Scene::Scene() = default;
 
 Scene::~Scene() = default;
 
-void Scene::setup() {}
+void Scene::setup() {
+    _registry.clear();
+}
 
 void Scene::update() {}
 
@@ -46,8 +48,9 @@ void Scene::render(SDL_Renderer *renderer) {
         auto &position = textView.get<TransformComponent>(entity);
         auto &text = textView.get<TextComponent>(entity);
         TTF_Font *font = AssetManager::getInstance().loadFont(text.fontName, text.size);
-        SDL_Color color = {static_cast<Uint8>(text.r), static_cast<Uint8>(text.g), static_cast<Uint8>(text.b), static_cast<Uint8>(text.a)};
-        renderText(renderer, text.text.c_str(), font, position.x, position.y,position.width, position.height, color);
+        SDL_Color color = {static_cast<Uint8>(text.textColor.r), static_cast<Uint8>(text.textColor.g),
+                           static_cast<Uint8>(text.textColor.b), static_cast<Uint8>(text.textColor.a)};
+        renderText(renderer, text.text.c_str(), font, position.x, position.y, position.width, position.height, color);
     }
 
     auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
@@ -96,7 +99,8 @@ void Scene::cleanup() {
     _registry.clear();
 }
 
-void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y,int width, int height, SDL_Color color) {
+void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
+                       SDL_Color color) {
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     if (surface == nullptr) {
         LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());

@@ -11,6 +11,8 @@
 
 #include "SceneManager.h"
 
+#include <utility>
+
 SceneManager::SceneManager() : _currentScene(nullptr) {}
 
 SceneManager::~SceneManager() {
@@ -46,7 +48,7 @@ void SceneManager::cleanup() {
 }
 
 void SceneManager::addScene(const std::string &name, std::shared_ptr<Scene> scene) {
-    _scenes[name] = scene;
+    _scenes[name] = std::move(scene);
 }
 
 void SceneManager::setActiveScene(const std::string &name) {
