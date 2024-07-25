@@ -63,9 +63,16 @@ protected:
 
     void setBackgroundColour(Color color);
 
+    // background music
+    Mix_Music *_bgm = nullptr;
+
+    void playBGM(const std::string &name);
+
+    void stopBGM();
+
     void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
                     SDL_Color color);
-    
+
 };
 
 

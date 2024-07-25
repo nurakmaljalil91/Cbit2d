@@ -12,7 +12,7 @@
 #include "MenuScene.h"
 #include <SDL2/SDL_mixer.h>
 
-MenuScene::MenuScene() : Scene(){
+MenuScene::MenuScene() : Scene() {
 }
 
 MenuScene::~MenuScene() = default;
@@ -22,6 +22,9 @@ void MenuScene::setup() {
     toggleDebug();
     // set background color to yellow
     setBackgroundColour(Color{234, 226, 168, 255});
+    // set background music
+    playBGM("easy-cheesy-bgm");
+
     _titleText = _registry.create();
     _sprite = _registry.create();
     _playButton = _registry.create();
@@ -39,8 +42,6 @@ void MenuScene::setup() {
         LOG_INFO("Changing scene to PlayScene");
         changeScene("PlayScene");
     });
-//    Mix_Music *bgm = AssetManager::getInstance().loadAudio("easy-cheesy-bgm");
-//    Mix_PlayMusic(bgm, -1);
 }
 
 void MenuScene::update() {

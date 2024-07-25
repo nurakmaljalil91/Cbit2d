@@ -17,6 +17,7 @@ Scene::~Scene() = default;
 
 void Scene::setup() {
     _registry.clear();
+    stopBGM();
 }
 
 void Scene::update() {}
@@ -24,7 +25,8 @@ void Scene::update() {}
 void Scene::render(SDL_Renderer *renderer) {
     // Set the background color
     if (_isBackgroundColorSet) {
-        SDL_SetRenderDrawColor(renderer, _backgroundColor.r, _backgroundColor.g, _backgroundColor.b, _backgroundColor.a);
+        SDL_SetRenderDrawColor(renderer, _backgroundColor.r, _backgroundColor.g, _backgroundColor.b,
+                               _backgroundColor.a);
         SDL_RenderClear(renderer);
     }
 
@@ -182,5 +184,14 @@ void Scene::toggleDebug() {
 void Scene::setBackgroundColour(Color color) {
     _backgroundColor = color;
     _isBackgroundColorSet = true;
+}
+
+void Scene::playBGM(const std::string &name) {
+    _bgm = AssetManager::getInstance().loadAudio(name);
+    Mix_PlayMusic(_bgm, -1);
+}
+
+void Scene::stopBGM() {
+    Mix_HaltMusic();
 }
 
