@@ -70,6 +70,8 @@ protected:
 
     void stopBGM();
 
+    void playSFX(const std::string &name);
+
     void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
                     SDL_Color color);
 

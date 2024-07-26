@@ -195,3 +195,8 @@ void Scene::stopBGM() {
     Mix_HaltMusic();
 }
 
+void Scene::playSFX(const std::string &name) {
+    Mix_Chunk *sfx = AssetManager::getInstance().loadSound(name);
+    Mix_PlayChannel(-1, sfx, 0);
+}
+

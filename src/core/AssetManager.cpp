@@ -54,7 +54,8 @@ void AssetManager::init(SDL_Renderer *renderer) {
 
             std::string filePath = entry.path().string();
             std::string relativePath = std::filesystem::relative(entry.path(), "resources/images").string();
-            std::string fileName = relativePath.substr(0, relativePath.find_last_of('.')); // Get relative path without extension
+            std::string fileName = relativePath.substr(0, relativePath.find_last_of(
+                    '.')); // Get relative path without extension
             SDL_Surface *surface = IMG_Load(filePath.c_str());
             if (surface == nullptr) {
                 LOG_ERROR("Failed to load image: %s", IMG_GetError());
@@ -80,12 +81,15 @@ void AssetManager::init(SDL_Renderer *renderer) {
 
             std::string filePath = entry.path().string();
             std::string relativePath = std::filesystem::relative(entry.path(), "resources/audio").string();
-            std::string fileName = relativePath.substr(0, relativePath.find_last_of('.')); // Get relative path without extension
+            std::string fileName = relativePath.substr(0, relativePath.find_last_of(
+                    '.')); // Get relative path without extension
             Mix_Music *audio = Mix_LoadMUS(filePath.c_str());
+            Mix_Chunk *sound = Mix_LoadWAV(filePath.c_str());
             if (audio == nullptr) {
                 LOG_ERROR("Failed to load audio: %s", Mix_GetError());
             }
             _audio[fileName] = audio;
+            _sounds[fileName] = sound;
         }
     }
 
@@ -101,7 +105,8 @@ void AssetManager::init(SDL_Renderer *renderer) {
 
             std::string filePath = entry.path().string();
             std::string relativePath = std::filesystem::relative(entry.path(), "resources/fonts").string();
-            std::string fileName = relativePath.substr(0, relativePath.find_last_of('.')); // Get relative path without extension
+            std::string fileName = relativePath.substr(0, relativePath.find_last_of(
+                    '.')); // Get relative path without extension
 
             _fonts[fileName] = filePath;
         }
@@ -159,4 +164,12 @@ TTF_Font *AssetManager::loadFont(const std::string &filename, int size) {
 
 AssetManager::AssetManager() {
     LOG_INFO("AssetManager initialized");
+}
+
+Mix_Chunk *AssetManager::loadSound(const std::string &filename) {
+    if (_sounds.find(filename) == _sounds.end()) {
+        LOG_WARN("Sound file not found: %s", filename);
+        return nullptr;
+    }
+    return _sounds[filename];
 }

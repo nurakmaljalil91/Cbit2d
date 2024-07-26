@@ -11,7 +11,7 @@
 
 #include "PlayScene.h"
 
-PlayScene::PlayScene() = default;
+PlayScene::PlayScene() : Scene() {}
 
 PlayScene::~PlayScene() = default;
 

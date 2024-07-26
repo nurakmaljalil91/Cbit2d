@@ -29,6 +29,8 @@ public:
 
     Mix_Music *loadAudio(const std::string &filename);
 
+    Mix_Chunk *loadSound(const std::string &filename);
+
     TTF_Font *loadFont(const std::string &filename, int size);
 
     void cleanup();
@@ -39,9 +41,8 @@ private:
     AssetManager();
 
     std::unordered_map<std::string, SDL_Texture *> _textures;
-
     std::unordered_map<std::string, Mix_Music *> _audio;
-
+    std::unordered_map<std::string, Mix_Chunk *> _sounds;
     std::unordered_map<std::string, std::string> _fonts;
 
 };

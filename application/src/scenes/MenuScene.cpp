@@ -10,7 +10,6 @@
  */
 
 #include "MenuScene.h"
-#include <SDL2/SDL_mixer.h>
 
 MenuScene::MenuScene() : Scene() {
 }
@@ -19,27 +18,28 @@ MenuScene::~MenuScene() = default;
 
 void MenuScene::setup() {
     Scene::setup();
-    toggleDebug();
+//    toggleDebug();
     // set background color to yellow
-    setBackgroundColour(Color{234, 226, 168, 255});
+    setBackgroundColour(Color{55, 138, 249, 255});
     // set background music
     playBGM("easy-cheesy-bgm");
 
     _titleText = _registry.create();
-    _sprite = _registry.create();
+//    _sprite = _registry.create();
     _playButton = _registry.create();
 
-    _registry.emplace<TextComponent>(_titleText, "CBIT2D", "JetBrainsMono-Regular", 32, 255, 255, 255, 255);
-    _registry.emplace<TransformComponent>(_titleText, 50, 50, 100, 50);
+    _registry.emplace<TextComponent>(_titleText, "Sokoban", "JetBrainsMono-Regular", 32, 255, 255, 255, 255);
+    _registry.emplace<TransformComponent>(_titleText, 314, 221, 100, 50);
 
-    _registry.emplace<TransformComponent>(_sprite, 200, 200, 64, 64);
-    _registry.emplace<SpriteComponent>(_sprite, "sokoban_spritesheet", 64, 64, 64, 64);
+//    _registry.emplace<TransformComponent>(_sprite, 200, 200, 64, 64);
+//    _registry.emplace<SpriteComponent>(_sprite, "sokoban_spritesheet", 64, 64, 64, 64);
 
-    _registry.emplace<TransformComponent>(_playButton, 400, 400, 150, 50);
+    _registry.emplace<TransformComponent>(_playButton, 291, 283, 150, 50);
     _registry.emplace<TextComponent>(_playButton, "Play", "Kenney_Future", 32, Color{255, 255, 255, 255});
+    _registry.emplace<SpriteComponent>(_playButton, "button_rectangle_depth_flat", 0, 0, 384, 128);
     _registry.emplace<ButtonComponent>(_playButton, [this]() {
-        LOG_INFO("Button clicked");
         LOG_INFO("Changing scene to PlayScene");
+        playSFX("click-a");
         changeScene("PlayScene");
     });
 }

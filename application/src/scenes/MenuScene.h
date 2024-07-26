@@ -29,9 +29,8 @@ public:
 
 private:
     entt::entity _titleText;
-    entt::entity _sprite;
+//    entt::entity _sprite;
     entt::entity _playButton;
-//    entt::entity _bgm;
 };
 
 
