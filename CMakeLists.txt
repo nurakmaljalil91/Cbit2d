@@ -69,6 +69,8 @@ add_library(Cbit2d SHARED
         src/core/AssetManager.cpp
         src/core/AssetManager.h
         src/core/Type.h
+        src/core/Input.cpp
+        src/core/Input.h
 )
 
 # Create an executable
@@ -91,6 +93,8 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/AssetManager.cpp
         src/core/AssetManager.h
         src/core/Type.h
+        src/core/Input.cpp
+        src/core/Input.h
 )
 
 # Link SDL2 library for the library

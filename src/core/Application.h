@@ -17,6 +17,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 #include "SceneManager.h"
+#include "Input.h"
 
 class Application {
 public:
@@ -40,6 +41,7 @@ private:
     SDL_Renderer *_renderer;
     bool _quit;
     SDL_Event _event{};
+    Input _input;
     TTF_Font* _defaultFont;
 
     // FPS counter

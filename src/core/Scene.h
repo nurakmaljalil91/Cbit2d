@@ -20,6 +20,7 @@
 #include "../utilities/Logger.h."
 #include "Components.h"
 #include "AssetManager.h"
+#include "Input.h"
 
 class Scene {
 public:
@@ -30,11 +31,9 @@ public:
     // scene lifecycle
     virtual void setup();
 
-    virtual void update();
+    virtual void update(Input& input);
 
     void render(SDL_Renderer *renderer);
-
-    virtual void handleInput(SDL_Event event);
 
     void cleanup();
 

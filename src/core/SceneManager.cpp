@@ -19,9 +19,9 @@ SceneManager::~SceneManager() {
     cleanup();
 }
 
-void SceneManager::update() {
+void SceneManager::update(Input& input) {
     if (_currentScene) {
-        _currentScene->update();
+        _currentScene->update(input);
     }
 }
 
@@ -32,12 +32,6 @@ void SceneManager::render(SDL_Renderer *renderer) {
 
     if (_currentScene) {
         _currentScene->render(renderer);
-    }
-}
-
-void SceneManager::handleInput(SDL_Event event) {
-    if (_currentScene) {
-        _currentScene->handleInput(event);
     }
 }
 

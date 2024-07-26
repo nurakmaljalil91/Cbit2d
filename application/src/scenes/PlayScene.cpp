@@ -15,25 +15,22 @@ PlayScene::PlayScene() : Scene() {}
 
 PlayScene::~PlayScene() = default;
 
-
 void PlayScene::setup() {
     Scene::setup();
+    toggleDebug();
+    auto _player = _registry.create();
+    _registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
+    _registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
 }
 
-void PlayScene::update() {
-    Scene::update();
-}
+void PlayScene::update(Input &input) {
+    Scene::update(input);
+    if (input.isKeyPressed(SDLK_w)) {
+        LOG_INFO("Moving up");
+    }
+    if (input.isKeyPressed(SDLK_RETURN)) {
+        LOG_INFO("Changing scene to MenuScene");
+        changeScene("MenuScene");
 
-void PlayScene::handleInput(SDL_Event event) {
-    Scene::handleInput(event);
-    // change scene if click enter
-    if (event.type == SDL_KEYDOWN) {
-        if (event.key.keysym.sym == SDLK_RETURN) {
-            LOG_INFO("Changing scene to MenuScene");
-            changeScene("MenuScene");
-        }
     }
 }
-
-
-

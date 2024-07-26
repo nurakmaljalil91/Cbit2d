@@ -23,9 +23,7 @@ public:
 
     void setup() override;
 
-    void update() override;
-
-    void handleInput(SDL_Event event) override;
+    void update(Input& input) override;
 };
 
 

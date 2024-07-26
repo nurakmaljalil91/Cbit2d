@@ -88,14 +88,18 @@ void Application::run() {
 
     while (!_quit) {
         Uint32 startTick = SDL_GetTicks();
-        while (SDL_PollEvent(&_event) != 0) {
-            _sceneManager.handleInput(_event);
-            if (_event.type == SDL_QUIT) {
-                _quit = true;
-            }
+
+        _input.update();
+
+        if (_input.isQuit()) {
+            _quit = true;
         }
 
-        _sceneManager.update();
+        if (_input.isKeyPressed(SDLK_ESCAPE)) {
+            _quit = true;
+        }
+
+        _sceneManager.update(_input);
 
         SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(_renderer);

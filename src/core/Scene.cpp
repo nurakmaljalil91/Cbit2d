@@ -20,7 +20,42 @@ void Scene::setup() {
     stopBGM();
 }
 
-void Scene::update() {}
+void Scene::update(Input &input) {
+    // if debug mode is on, log the coordinates of the mouse when clicked
+    int mouseX, mouseY;
+    if (_isDebug && input.isMouseButtonPressed(SDL_MOUSEBUTTONDOWN)) {
+
+        SDL_GetMouseState(&mouseX, &mouseY);
+        LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
+    }
+
+    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
+    for (auto entity: buttonView) {
+        auto &button = buttonView.get<ButtonComponent>(entity);
+        auto &transform = buttonView.get<TransformComponent>(entity);
+        // hover
+        input.getMousePosition(mouseX, mouseY);
+        if (mouseX != 0 || mouseY != 0) {
+            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
+                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
+                button.isHover = true;
+                LOG_INFO("Mouse hovered on button");
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
+            } else {
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
+                button.isHover = false;
+            }
+        }
+
+        if (input.isMouseButtonPressed(SDL_MOUSEBUTTONDOWN)) {
+            SDL_GetMouseState(&mouseX, &mouseY);
+            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
+                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
+                button.onClick();
+            }
+        }
+    }
+}
 
 void Scene::render(SDL_Renderer *renderer) {
     // Set the background color
@@ -89,43 +124,6 @@ void Scene::render(SDL_Renderer *renderer) {
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_Rect rect = {position.x, position.y, position.width, position.height};
             SDL_RenderDrawRect(renderer, &rect);
-        }
-    }
-}
-
-void Scene::handleInput(SDL_Event event) {
-    // if debug mode is on, log the coordinates of the mouse when clicked
-    if (_isDebug && event.type == SDL_MOUSEBUTTONDOWN) {
-        int mouseX, mouseY;
-        SDL_GetMouseState(&mouseX, &mouseY);
-        LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
-    }
-
-    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
-    for (auto entity: buttonView) {
-        auto &button = buttonView.get<ButtonComponent>(entity);
-        auto &transform = buttonView.get<TransformComponent>(entity);
-        // hover
-        if (event.type == SDL_MOUSEMOTION) {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
-                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
-                button.isHover = true;
-                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
-            } else {
-                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
-                button.isHover = false;
-            }
-        }
-
-        if (event.type == SDL_MOUSEBUTTONDOWN) {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
-                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
-                button.onClick();
-            }
         }
     }
 }

@@ -23,14 +23,7 @@ public:
 
     void setup() override;
 
-    void update() override;
-
-    void handleInput(SDL_Event event) override;
-
-private:
-    entt::entity _titleText;
-//    entt::entity _sprite;
-    entt::entity _playButton;
+    void update(Input &input) override;
 };
 
 

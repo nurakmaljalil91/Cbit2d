@@ -16,6 +16,7 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
+#include "Input.h"
 
 
 class SceneManager {
@@ -24,11 +25,9 @@ public:
 
     ~SceneManager();
 
-    void update();
+    void update(Input& input);
 
     void render(SDL_Renderer *renderer);
-
-    void handleInput(SDL_Event event);
 
     void cleanup();
 
