@@ -44,7 +44,6 @@ private:
     std::unordered_map<std::string, Mix_Music *> _audio;
     std::unordered_map<std::string, Mix_Chunk *> _sounds;
     std::unordered_map<std::string, std::string> _fonts;
-
 };
 
 

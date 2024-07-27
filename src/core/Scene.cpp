@@ -40,6 +40,9 @@ void Scene::render(SDL_Renderer *renderer) {
         SDL_RenderClear(renderer);
     }
 
+    // Render the tile map
+    _tileMap.render(renderer);
+
     // Render debug grid if _isDebug is true
     if (_isDebug) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color for grid lines
@@ -65,6 +68,7 @@ void Scene::render(SDL_Renderer *renderer) {
 
 void Scene::cleanup() {
     _ecs.cleanup();
+    _tileMap.cleanup();
 }
 
 bool Scene::switchScene() const {

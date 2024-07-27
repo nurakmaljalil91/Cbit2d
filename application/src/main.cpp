@@ -14,6 +14,7 @@
 #include "../../src/core/Application.h"
 #include "scenes/MenuScene.h"
 #include "scenes/PlayScene.h"
+//#include <simdjson.h>
 
 int main(int argc, char *argv[]) {
 
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]) {
 
     app.getSceneManager().addScene("MenuScene", std::make_shared<MenuScene>());
     app.getSceneManager().addScene("PlayScene", std::make_shared<PlayScene>());
-    app.getSceneManager().setActiveScene("PlayScene");
+    app.getSceneManager().setActiveScene("MenuScene");
 
     app.run();
 

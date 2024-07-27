@@ -18,7 +18,7 @@ MenuScene::~MenuScene() = default;
 
 void MenuScene::setup() {
     Scene::setup();
-    toggleDebug();
+//    toggleDebug();
     // set background color to yellow
     setBackgroundColour(Color{55, 138, 249, 255});
     // set background music

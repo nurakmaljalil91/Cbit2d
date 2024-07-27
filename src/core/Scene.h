@@ -22,6 +22,7 @@
 #include "AssetManager.h"
 #include "Input.h"
 #include "EntityComponentSystem.h"
+#include "TileMap.h"
 
 class Scene {
 public:
@@ -71,6 +72,9 @@ protected:
     static void stopBGM();
 
     static void playSFX(const std::string &name);
+
+    // manage tile map
+    TileMap _tileMap;
 };
 
 

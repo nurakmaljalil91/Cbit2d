@@ -21,11 +21,13 @@ PlayScene::~PlayScene() = default;
 void PlayScene::setup() {
     Scene::setup();
 //    toggleDebug();
+
+    // load map
+    _tileMap.loadMap("sokoban_tilesheet", "resources/maps/basic.json", 64, 64, _ecs.registry);
+
     _player = _ecs.registry.create();
-    _ecs.registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
-//    _ecs.registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
+    _ecs.registry.emplace<TransformComponent>(_player, 64, 64, 64, 64);
     _ecs.registry.emplace<ColliderComponent>(_player, 45, 50);
-//    _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64, 3, 0.1f);
     auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64);
     animatedSprite.addAnimation("idle", 0, 256, 1, 0.2f);
     animatedSprite.addAnimation("down", 0, 256, 3, 0.2f);
@@ -34,10 +36,8 @@ void PlayScene::setup() {
     animatedSprite.addAnimation("right", 0, 384, 3, 0.2f);
     animatedSprite.playAnimation("idle");
 
-
-
     _enemy = _ecs.registry.create();
-    _ecs.registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
+    _ecs.registry.emplace<TransformComponent>(_enemy, 192, 192, 64, 64);
     _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64);
     _ecs.registry.emplace<ColliderComponent>(_enemy, 64, 64);
 }
@@ -91,7 +91,7 @@ void PlayScene::update(float deltaTime, Input &input) {
         playerCollider.x + playerCollider.width > enemyCollider.x &&
         playerCollider.y < enemyCollider.y + enemyCollider.height &&
         playerCollider.y + playerCollider.height > enemyCollider.y) {
-        LOG_INFO("Player collided with enemy");
+//        LOG_INFO("Player collided with enemy");
         // Resolve collision: Reset position to previous state
         transform.position.x -= transform.velocity.x * deltaTime;
         transform.position.y -= transform.velocity.y * deltaTime;

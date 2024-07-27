@@ -11,6 +11,7 @@
 - Add a simple collision detection system.
 - Add entity component system (ECS) for entity management.
 - Add animated sprite component for player and enemy entities.
+- Add TileMap component for rendering the background.
 
 #### Changed
 

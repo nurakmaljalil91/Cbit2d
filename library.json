@@ -18,6 +18,7 @@
     "SDL_ttf": "https://github.com/libsdl-org/SDL_ttf.git@SDL2",
     "SDL_mixer": "https://github.com/libsdl-org/SDL_mixer.git@SDL2",
     "entt": "https://github.com/skypjack/entt.git",
-    "glm": "https://github.com/g-truc/glm.git"
+    "glm": "https://github.com/g-truc/glm.git",
+    "simdjson": "https://github.com/simdjson/simdjson.git"
   }
 }
