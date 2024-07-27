@@ -25,11 +25,10 @@ void PlayScene::setup() {
     auto _enemy = _registry.create();
     _registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
     _registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
-
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
-
+    Scene::update(deltaTime, input);
     // handle input for the player movement
     auto &transform = _registry.get<TransformComponent>(_player);
     if (input.isKeyPressed(SDLK_w)) {
@@ -54,6 +53,4 @@ void PlayScene::update(float deltaTime, Input &input) {
         changeScene("MenuScene");
 
     }
-    Scene::update(deltaTime, input);
-
 }
