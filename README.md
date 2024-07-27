@@ -39,7 +39,7 @@ cmake --build . --target install
 or
 
 ```sh
-cmake -B_builds -DCMAKE_INSTALL_PREFIX="C:\Users\User\Developments\SharkCardGame\vendors\cbit2d"  -G "MinGW Makefiles" -DCMAKE_CXX_STANDARD=20
+cmake -B _builds -DCMAKE_INSTALL_PREFIX="C:\Users\User\Developments\SharkCardGame\vendors\cbit2d"  -G "MinGW Makefiles" -DCMAKE_CXX_STANDARD=20
 cmake --build _builds --target install
 ```
 
