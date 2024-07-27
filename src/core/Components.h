@@ -39,6 +39,42 @@ struct SpriteComponent {
     int x, y, width, height;
 };
 
+struct Animation {
+    int x, y;
+    int frameCount;
+    float frameTime;
+    int startFrame;
+};
+
+struct AnimatedSpriteComponent {
+    std::string textureName;
+    int width, height;        // Dimensions of each frame
+    int currentFrame;
+    float currentTime;       // Time accumulator for the current frame
+    std::unordered_map<std::string, Animation> animations; // Different animations
+    std::string currentAnimation; // The current animation name
+
+    AnimatedSpriteComponent(std::string textureName, int width, int height) :
+            textureName(textureName), width(width), height(height),
+            currentFrame(0), currentTime(0) {}
+
+    void addAnimation(const std::string &name, int x, int y, int frameCount, float frameTime) {
+        animations[name] = Animation{x, y, frameCount, frameTime, currentFrame};
+    }
+
+    void playAnimation(const std::string &name) {
+        if (currentAnimation != name) {
+            currentAnimation = name;
+            currentFrame = animations[name].startFrame;
+            currentTime = 0;
+        }
+    }
+
+    const Animation& getCurrentAnimation() {
+        return animations[currentAnimation];
+    }
+};
+
 struct TextComponent {
     std::string text;
     std::string fontName;

@@ -59,6 +59,16 @@ void EntityComponentSystem::update(float deltaTime, Input &input, bool debug) {
             }
         }
     }
+
+    auto animatedSpriteView = registry.view<AnimatedSpriteComponent>();
+    for (auto entity: animatedSpriteView) {
+        auto &animatedSprite = animatedSpriteView.get<AnimatedSpriteComponent>(entity);
+        animatedSprite.currentTime += deltaTime;
+        if (animatedSprite.currentTime >= animatedSprite.getCurrentAnimation().frameTime) {
+            animatedSprite.currentFrame = (animatedSprite.currentFrame + 1) % animatedSprite.getCurrentAnimation().frameCount;
+            animatedSprite.currentTime = 0;
+        }
+    }
 }
 
 void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
@@ -71,6 +81,20 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         SDL_Texture *texture = AssetManager::getInstance().loadTexture(sprite.textureName);
         SDL_Rect srcRect = {sprite.x, sprite.y, sprite.width, sprite.height};
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+    }
+
+    auto animatedSpriteView = registry.view<TransformComponent, AnimatedSpriteComponent>();
+    for (auto entity: animatedSpriteView) {
+        auto &transform = animatedSpriteView.get<TransformComponent>(entity);
+        auto &animatedSprite = animatedSpriteView.get<AnimatedSpriteComponent>(entity);
+        SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
+                            transform.width, transform.height};
+        SDL_Texture *texture = AssetManager::getInstance().loadTexture(animatedSprite.textureName);
+        SDL_Rect srcRect = {animatedSprite.getCurrentAnimation().x + animatedSprite.currentFrame * animatedSprite.width, animatedSprite.getCurrentAnimation().y,
+                            animatedSprite.width, animatedSprite.height};
+        SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+
+
     }
 
     auto textView = registry.view<TransformComponent, TextComponent>();

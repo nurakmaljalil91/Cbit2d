@@ -20,16 +20,26 @@ PlayScene::~PlayScene() = default;
 
 void PlayScene::setup() {
     Scene::setup();
-    toggleDebug();
+//    toggleDebug();
     _player = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
-    _ecs.registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
+//    _ecs.registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
     _ecs.registry.emplace<ColliderComponent>(_player, 45, 50);
+//    _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64, 3, 0.1f);
+    auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64);
+    animatedSprite.addAnimation("idle", 0, 256, 1, 0.2f);
+    animatedSprite.addAnimation("down", 0, 256, 3, 0.2f);
+    animatedSprite.addAnimation("up", 192, 256, 3, 0.2f);
+    animatedSprite.addAnimation("left", 192, 384, 3, 0.2f);
+    animatedSprite.addAnimation("right", 0, 384, 3, 0.2f);
+    animatedSprite.playAnimation("idle");
+
+
 
     _enemy = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
-    _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_enemy, 45, 50);
+    _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64);
+    _ecs.registry.emplace<ColliderComponent>(_enemy, 64, 64);
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
@@ -37,27 +47,34 @@ void PlayScene::update(float deltaTime, Input &input) {
 
     // handle input for the player movement
     auto &transform = _ecs.registry.get<TransformComponent>(_player);
+    auto &animatedSprite = _ecs.registry.get<AnimatedSpriteComponent>(_player);
     bool isMoving = false;
     if (input.isKeyPressed(SDLK_w)) {
         transform.velocity.x = 0;
         transform.velocity.y = -200;
         isMoving = true;
+        animatedSprite.playAnimation("up");
     }
     if (input.isKeyPressed(SDLK_s)) {
         transform.velocity.x = 0;
         transform.velocity.y = 200;
         isMoving = true;
+        animatedSprite.playAnimation("down");
     }
     if (input.isKeyPressed(SDLK_a)) {
         transform.velocity.x = -200;
         transform.velocity.y = 0;
         isMoving = true;
+        animatedSprite.playAnimation("left");
     }
     if (input.isKeyPressed(SDLK_d)) {
         transform.velocity.x = 200;
         transform.velocity.y = 0;
-        isMoving = false;
+        isMoving = true;
+        animatedSprite.playAnimation("right");
     }
+
+//    animatedSprite.playAnimation("idle");
 
     // Update player position based on velocity
     transform.position.x += transform.velocity.x * deltaTime;
@@ -67,8 +84,8 @@ void PlayScene::update(float deltaTime, Input &input) {
     auto &enemyCollider = _ecs.registry.get<ColliderComponent>(_enemy);
 
     // Center the collider relative to the transform's position and size
-    playerCollider.x = static_cast<int>(transform.position.x + (transform.width - playerCollider.width) / 2);
-    playerCollider.y = static_cast<int>(transform.position.y + (transform.height - playerCollider.height) / 2);
+    playerCollider.x = static_cast<int>(transform.position.x ) + (transform.width - playerCollider.width) / 2;
+    playerCollider.y = static_cast<int>(transform.position.y) + (transform.height - playerCollider.height) / 2;
 
     if (playerCollider.x < enemyCollider.x + enemyCollider.width &&
         playerCollider.x + playerCollider.width > enemyCollider.x &&
@@ -86,6 +103,7 @@ void PlayScene::update(float deltaTime, Input &input) {
     if (!isMoving) {
         transform.velocity.x = 0;
         transform.velocity.y = 0;
+//        animatedSprite.playAnimation("idle");
     }
 
     if (input.isKeyPressed(SDLK_RETURN)) {

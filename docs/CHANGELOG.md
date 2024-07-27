@@ -10,6 +10,7 @@
 - Player and enemy entities with basic movement.
 - Add a simple collision detection system.
 - Add entity component system (ECS) for entity management.
+- Add animated sprite component for player and enemy entities.
 
 #### Changed
 
