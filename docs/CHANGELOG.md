@@ -1,26 +1,36 @@
 # CHANGELOG
 
-## [0.1.0] - 2024-07-21
-### Added
+## [Unreleased]
+
+### 2024-07-27
+
+- Initial setup for the PlayScene and Input handling.
+- Player and enemy entities with basic movement.
+
+#### Changed
+
+- Simplified the input handling code.
+- Improved the deltaTime calculation in the main loop.
+
+#### Fixed
+
+- Corrected the deltaTime being zero issue.
+
+## 2024-07-22
+
+#### Added
+
+#### Added
+
 - Basic game loop with input handling.
 - PlayScene setup with player and enemy entities.
 - Basic player movement using keyboard input.
 
-### Changed
+#### Changed
+
 - Refactored the Scene class to include background color and BGM handling.
 
-### Fixed
+#### Fixed
+
 - Initial issues with player movement and scene transitions.
-
-## [Unreleased]
-### Added
-- Initial setup for the PlayScene and Input handling.
-- Player and enemy entities with basic movement.
-
-### Changed
-- Simplified the input handling code.
-- Improved the deltaTime calculation in the main loop.
-
-### Fixed
-- Corrected the deltaTime being zero issue.
 
