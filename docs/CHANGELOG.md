@@ -4,8 +4,11 @@
 
 ### 2024-07-27
 
+#### Added
+
 - Initial setup for the PlayScene and Input handling.
 - Player and enemy entities with basic movement.
+- Add a simple collision detection system.
 
 #### Changed
 
@@ -17,8 +20,6 @@
 - Corrected the deltaTime being zero issue.
 
 ## 2024-07-22
-
-#### Added
 
 #### Added
 

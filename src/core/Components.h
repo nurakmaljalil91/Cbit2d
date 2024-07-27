@@ -28,6 +28,10 @@ struct TransformComponent {
     TransformComponent(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
 };
 
+struct ColliderComponent {
+    int x, y, width, height, offsetX, offsetY;
+};
+
 struct SpriteComponent {
     std::string textureName;
     int x, y, width, height;

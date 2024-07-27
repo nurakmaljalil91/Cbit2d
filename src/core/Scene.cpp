@@ -29,14 +29,22 @@ void Scene::update(float deltaTime, Input &input) {
         LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
     }
 
-    auto transformView = _registry.view<TransformComponent>();
-    for (auto entity: transformView) {
-        auto &transform = transformView.get<TransformComponent>(entity);
-        transform.position.x = transform.position.x + transform.velocity.x * deltaTime;
-        transform.position.y = transform.position.y + transform.velocity.y * deltaTime;
+//    auto transformView = _registry.view<TransformComponent>();
+//    for (auto entity: transformView) {
+//        auto &transform = transformView.get<TransformComponent>(entity);
+//        transform.position.x = transform.position.x + transform.velocity.x * deltaTime;
+//        transform.position.y = transform.position.y + transform.velocity.y * deltaTime;
+//
+//        transform.velocity.x = 0;
+//        transform.velocity.y = 0;
+//    }
 
-        transform.velocity.x = 0;
-        transform.velocity.y = 0;
+    auto colliderView = _registry.view<TransformComponent, ColliderComponent>();
+    for (auto entity: colliderView) {
+        auto &transform = colliderView.get<TransformComponent>(entity);
+        auto &collider = colliderView.get<ColliderComponent>(entity);
+        collider.x = static_cast<int>(transform.position.x) + collider.offsetX;
+        collider.y = static_cast<int>(transform.position.y) + collider.offsetY;
     }
 
     auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
@@ -94,15 +102,20 @@ void Scene::render(SDL_Renderer *renderer) {
         }
     }
 
-    auto transformView = _registry.view<TransformComponent>();
-    for (auto entity: transformView) {
-        auto &transform = transformView.get<TransformComponent>(entity);
+    auto boundingBoxView = _registry.view<TransformComponent, ColliderComponent>();
+    for (auto entity: boundingBoxView) {
+        auto &transform = boundingBoxView.get<TransformComponent>(entity);
+        auto &collider = boundingBoxView.get<ColliderComponent>(entity);
         if (_isDebug) {
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             // draw the bounding box
             SDL_Rect rect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
                              transform.width, transform.height};
             SDL_RenderDrawRect(renderer, &rect);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+            // draw the collider box
+            SDL_Rect colliderRect = {collider.x, collider.y, collider.width, collider.height};
+            SDL_RenderDrawRect(renderer, &colliderRect);
         }
     }
 

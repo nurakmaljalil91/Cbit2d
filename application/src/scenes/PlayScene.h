@@ -27,6 +27,7 @@ public:
 
 private:
     entt::entity _player;
+    entt::entity _enemy;
 };
 
 

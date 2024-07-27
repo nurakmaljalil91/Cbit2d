@@ -21,30 +21,67 @@ void PlayScene::setup() {
     _player = _registry.create();
     _registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
     _registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
+    _registry.emplace<ColliderComponent>(_player, 0, 0, 60, 60, 4, 4);
 
-    auto _enemy = _registry.create();
+    _enemy = _registry.create();
     _registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
     _registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
+    _registry.emplace<ColliderComponent>(_enemy,0, 0, 58, 58, 4, 4);
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
     Scene::update(deltaTime, input);
+
     // handle input for the player movement
     auto &transform = _registry.get<TransformComponent>(_player);
+    bool isMoving = false;
     if (input.isKeyPressed(SDLK_w)) {
         transform.velocity.x = 0;
         transform.velocity.y = -200;
+        isMoving = true;
     }
     if (input.isKeyPressed(SDLK_s)) {
         transform.velocity.x = 0;
         transform.velocity.y = 200;
+        isMoving = true;
     }
     if (input.isKeyPressed(SDLK_a)) {
         transform.velocity.x = -200;
         transform.velocity.y = 0;
+        isMoving = true;
     }
     if (input.isKeyPressed(SDLK_d)) {
         transform.velocity.x = 200;
+        transform.velocity.y = 0;
+        isMoving = false;
+    }
+
+    // Update player position based on velocity
+    transform.position.x += transform.velocity.x * deltaTime;
+    transform.position.y += transform.velocity.y * deltaTime;
+
+
+    auto &playerCollider = _registry.get<ColliderComponent>(_player);
+    auto &enemyCollider = _registry.get<ColliderComponent>(_enemy);
+
+    playerCollider.x = static_cast<int>(transform.position.x) + playerCollider.offsetX;
+    playerCollider.y = static_cast<int>(transform.position.y) + playerCollider.offsetY;
+
+    if (playerCollider.x < enemyCollider.x + enemyCollider.width &&
+        playerCollider.x + playerCollider.width > enemyCollider.x &&
+        playerCollider.y < enemyCollider.y + enemyCollider.height &&
+        playerCollider.y + playerCollider.height > enemyCollider.y) {
+        LOG_INFO("Player collided with enemy");
+        // Resolve collision: Reset position to previous state
+        transform.position.x -= transform.velocity.x * deltaTime;
+        transform.position.y -= transform.velocity.y * deltaTime;
+        transform.velocity.x = 0;
+        transform.velocity.y = 0;
+    }
+
+    // Reset velocity if no movement key is pressed
+    if (!isMoving) {
+        transform.velocity.x = 0;
         transform.velocity.y = 0;
     }
 
