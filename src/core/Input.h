@@ -27,11 +27,13 @@ public:
 
     bool isQuit();
 
+    bool isFullscreen();
+
     bool isMouseButtonPressed(int button);
 
-    bool isMouseButtonReleased(Uint8 button);
+    bool isMouseButtonReleased(int button);
 
-    bool isMouseButtonHeld(Uint8 button);
+    bool isMouseButtonHeld(int button);
 
     void getMousePosition(int &x, int &y);
 
@@ -42,9 +44,9 @@ private:
     std::unordered_map<int, bool> _keyReleased;
     std::unordered_map<int, bool> _keyHeld;
 
-    std::unordered_map<Uint8, bool> _mouseButtonPressed;
-    std::unordered_map<Uint8, bool> _mouseButtonReleased;
-    std::unordered_map<Uint8, bool> _mouseButtonHeld;
+    std::unordered_map<int, bool> _mouseButtonPressed;
+    std::unordered_map<int, bool> _mouseButtonReleased;
+    std::unordered_map<int, bool> _mouseButtonHeld;
 
     int _mouseX, _mouseY;
     int _prevMouseX, _prevMouseY;

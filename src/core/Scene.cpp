@@ -39,7 +39,6 @@ void Scene::update(Input &input) {
             if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
                 mouseY >= transform.y && mouseY <= transform.y + transform.height) {
                 button.isHover = true;
-                LOG_INFO("Mouse hovered on button");
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
             } else {
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
@@ -47,10 +46,8 @@ void Scene::update(Input &input) {
             }
         }
 
-        if (input.isMouseButtonPressed(SDL_MOUSEBUTTONDOWN)) {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
-                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
+        if (input.isMouseButtonPressed(SDL_BUTTON_LEFT)) {
+            if (button.isHover) {
                 button.onClick();
             }
         }

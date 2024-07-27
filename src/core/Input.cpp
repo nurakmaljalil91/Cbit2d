@@ -50,6 +50,8 @@ void Input::update() {
             case SDL_QUIT:
                 _keyPressed[SDLK_ESCAPE] = true;
                 break;
+            case SDLK_f:
+                _keyPressed[SDLK_F11] = true;
             default:
                 break;
         }
@@ -72,15 +74,19 @@ bool Input::isQuit() {
     return _keyPressed[SDLK_ESCAPE];
 }
 
+bool Input::isFullscreen() {
+    return _keyPressed[SDLK_f];
+}
+
 bool Input::isMouseButtonPressed(int button) {
     return _mouseButtonPressed[button];
 }
 
-bool Input::isMouseButtonReleased(Uint8 button) {
+bool Input::isMouseButtonReleased(int button) {
     return _mouseButtonReleased[button];
 }
 
-bool Input::isMouseButtonHeld(Uint8 button) {
+bool Input::isMouseButtonHeld(int button) {
     return _mouseButtonHeld[button];
 }
 

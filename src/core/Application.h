@@ -21,7 +21,7 @@
 
 class Application {
 public:
-    Application(const char *windowTitle, int windowWidth, int windowHeight);
+    Application(const char *windowTitle, int windowWidth, int windowHeight, bool isFullscreen);
 
     ~Application();
 
@@ -39,10 +39,15 @@ private:
     int _windowWidth;
     int _windowHeight;
     SDL_Renderer *_renderer;
-    bool _quit;
+    bool _isQuit;
+    bool _isFullscreen = false;
+    bool _isAllowToggleFullscreen = false;
     SDL_Event _event{};
     Input _input;
     TTF_Font* _defaultFont;
+
+    // fullscreen
+    void toggleFullscreen();
 
     // FPS counter
     Uint32 _frameCount = 0;

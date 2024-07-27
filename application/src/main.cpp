@@ -17,7 +17,7 @@
 
 int main(int argc, char *argv[]) {
 
-    Application app("CBit 2D Application", 832, 640);
+    Application app("CBit 2D Application", 832, 640, false);
 
     if (!app.init()) {
         return -1;

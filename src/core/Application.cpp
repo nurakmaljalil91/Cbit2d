@@ -13,14 +13,15 @@
 #include "../utilities/LocalMachine.h"
 #include "AssetManager.h"
 
-Application::Application(const char *windowTitle, int windowWidth, int windowHeight) :
+Application::Application(const char *windowTitle, int windowWidth, int windowHeight, bool isFullscreen) :
         _windowTitle(windowTitle),
         _windowWidth(windowWidth),
         _windowHeight(windowHeight),
         _window(nullptr),
         _renderer(nullptr),
-        _quit(false),
-        _defaultFont(nullptr) {}
+        _isQuit(false),
+        _defaultFont(nullptr),
+        _isAllowToggleFullscreen(isFullscreen) {}
 
 
 Application::~Application() {
@@ -45,9 +46,15 @@ bool Application::init() {
         return false;
     }
 
-    _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
-                               _windowHeight,
-                               SDL_WINDOW_SHOWN);
+    if (_isAllowToggleFullscreen) {
+        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
+                                   _windowHeight,
+                                   SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN);
+    } else {
+        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
+                                   _windowHeight,
+                                   SDL_WINDOW_SHOWN);
+    }
 
     if (_window == nullptr) {
         LOG_ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
@@ -86,17 +93,31 @@ bool Application::init() {
 void Application::run() {
     _lastFPSTime = SDL_GetTicks(); // Initialize the last FPS update time
 
-    while (!_quit) {
+    while (!_isQuit) {
         Uint32 startTick = SDL_GetTicks();
 
         _input.update();
 
         if (_input.isQuit()) {
-            _quit = true;
+            _isQuit = true;
+        }
+
+        if (_input.isFullscreen()) {
+            if (_isFullscreen) {
+                SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN); // Switch to fullscreen mode
+            } else {
+                SDL_SetWindowFullscreen(_window, 0); // Switch to windowed mode
+            }
+            _isFullscreen = !_isFullscreen;
         }
 
         if (_input.isKeyPressed(SDLK_ESCAPE)) {
-            _quit = true;
+            _isQuit = true;
+        }
+
+        // Toggle fullscreen with F11 key
+        if (_input.isKeyPressed(SDLK_F11)) {
+            toggleFullscreen();
         }
 
         _sceneManager.update(_input);
@@ -174,5 +195,12 @@ void Application::_renderApplicationTexts(SDL_Renderer *renderer, const char *te
 
 SceneManager &Application::getSceneManager() {
     return _sceneManager;
+}
+
+void Application::toggleFullscreen() {
+    Uint32 fullscreenFlag = SDL_WINDOW_FULLSCREEN;
+    bool isFullscreen = SDL_GetWindowFlags(_window) & fullscreenFlag;
+    SDL_SetWindowFullscreen(_window, isFullscreen ? 0 : fullscreenFlag);
+//    SDL_ShowCursor(isFullscreen);
 }
 
