@@ -9,6 +9,7 @@
 - Initial setup for the PlayScene and Input handling.
 - Player and enemy entities with basic movement.
 - Add a simple collision detection system.
+- Add entity component system (ECS) for entity management.
 
 #### Changed
 

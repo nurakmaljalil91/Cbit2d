@@ -75,6 +75,8 @@ add_library(Cbit2d SHARED
         src/core/Type.h
         src/core/Input.cpp
         src/core/Input.h
+        src/core/EntityComponentSystem.cpp
+        src/core/EntityComponentSystem.h
 )
 
 # Create an executable
@@ -99,6 +101,8 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/Type.h
         src/core/Input.cpp
         src/core/Input.h
+        src/core/EntityComponentSystem.cpp
+        src/core/EntityComponentSystem.h
 )
 
 # Link SDL2 library for the library

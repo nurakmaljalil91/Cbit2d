@@ -18,22 +18,22 @@ PlayScene::~PlayScene() = default;
 void PlayScene::setup() {
     Scene::setup();
     toggleDebug();
-    _player = _registry.create();
-    _registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
-    _registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
-    _registry.emplace<ColliderComponent>(_player, 0, 0, 60, 60, 4, 4);
+    _player = _ecs.registry.create();
+    _ecs.registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
+    _ecs.registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
+    _ecs.registry.emplace<ColliderComponent>(_player, 0, 0, 60, 60, 4, 4);
 
-    _enemy = _registry.create();
-    _registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
-    _registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
-    _registry.emplace<ColliderComponent>(_enemy,0, 0, 58, 58, 4, 4);
+    _enemy = _ecs.registry.create();
+    _ecs.registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
+    _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
+    _ecs.registry.emplace<ColliderComponent>(_enemy,0, 0, 58, 58, 4, 4);
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
     Scene::update(deltaTime, input);
 
     // handle input for the player movement
-    auto &transform = _registry.get<TransformComponent>(_player);
+    auto &transform = _ecs.registry.get<TransformComponent>(_player);
     bool isMoving = false;
     if (input.isKeyPressed(SDLK_w)) {
         transform.velocity.x = 0;
@@ -61,8 +61,8 @@ void PlayScene::update(float deltaTime, Input &input) {
     transform.position.y += transform.velocity.y * deltaTime;
 
 
-    auto &playerCollider = _registry.get<ColliderComponent>(_player);
-    auto &enemyCollider = _registry.get<ColliderComponent>(_enemy);
+    auto &playerCollider = _ecs.registry.get<ColliderComponent>(_player);
+    auto &enemyCollider = _ecs.registry.get<ColliderComponent>(_enemy);
 
     playerCollider.x = static_cast<int>(transform.position.x) + playerCollider.offsetX;
     playerCollider.y = static_cast<int>(transform.position.y) + playerCollider.offsetY;

@@ -21,6 +21,7 @@
 #include "Components.h"
 #include "AssetManager.h"
 #include "Input.h"
+#include "EntityComponentSystem.h"
 
 class Scene {
 public:
@@ -45,7 +46,7 @@ public:
     std::string getNextScene();
 
 protected:
-    entt::registry _registry;
+    EntityComponentSystem _ecs;
 
     // manage scene
     bool _isChangeScene = false;
@@ -70,10 +71,6 @@ protected:
     void stopBGM();
 
     void playSFX(const std::string &name);
-
-    void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
-                    SDL_Color color);
-
 };
 
 

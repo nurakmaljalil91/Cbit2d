@@ -16,7 +16,7 @@ Scene::Scene() = default;
 Scene::~Scene() = default;
 
 void Scene::setup() {
-    _registry.clear();
+    _ecs.cleanup();
     stopBGM();
 }
 
@@ -29,49 +29,7 @@ void Scene::update(float deltaTime, Input &input) {
         LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
     }
 
-//    auto transformView = _registry.view<TransformComponent>();
-//    for (auto entity: transformView) {
-//        auto &transform = transformView.get<TransformComponent>(entity);
-//        transform.position.x = transform.position.x + transform.velocity.x * deltaTime;
-//        transform.position.y = transform.position.y + transform.velocity.y * deltaTime;
-//
-//        transform.velocity.x = 0;
-//        transform.velocity.y = 0;
-//    }
-
-    auto colliderView = _registry.view<TransformComponent, ColliderComponent>();
-    for (auto entity: colliderView) {
-        auto &transform = colliderView.get<TransformComponent>(entity);
-        auto &collider = colliderView.get<ColliderComponent>(entity);
-        collider.x = static_cast<int>(transform.position.x) + collider.offsetX;
-        collider.y = static_cast<int>(transform.position.y) + collider.offsetY;
-    }
-
-    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
-    for (auto entity: buttonView) {
-        auto &button = buttonView.get<ButtonComponent>(entity);
-        auto &transform = buttonView.get<TransformComponent>(entity);
-        // hover
-        input.getMousePosition(mouseX, mouseY);
-        if (mouseX != 0 || mouseY != 0) {
-            if (mouseX >= static_cast<int>(transform.position.x) &&
-                mouseX <= static_cast<int>(transform.position.x) + transform.width &&
-                mouseY >= static_cast<int>(transform.position.y) &&
-                mouseY <= static_cast<int>(transform.position.y) + transform.height) {
-                button.isHover = true;
-                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
-            } else {
-                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
-                button.isHover = false;
-            }
-        }
-
-        if (input.isMouseButtonPressed(SDL_BUTTON_LEFT)) {
-            if (button.isHover) {
-                button.onClick();
-            }
-        }
-    }
+    _ecs.update(deltaTime, input, _isDebug);
 }
 
 void Scene::render(SDL_Renderer *renderer) {
@@ -102,90 +60,11 @@ void Scene::render(SDL_Renderer *renderer) {
         }
     }
 
-    auto boundingBoxView = _registry.view<TransformComponent, ColliderComponent>();
-    for (auto entity: boundingBoxView) {
-        auto &transform = boundingBoxView.get<TransformComponent>(entity);
-        auto &collider = boundingBoxView.get<ColliderComponent>(entity);
-        if (_isDebug) {
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            // draw the bounding box
-            SDL_Rect rect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
-                             transform.width, transform.height};
-            SDL_RenderDrawRect(renderer, &rect);
-            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-            // draw the collider box
-            SDL_Rect colliderRect = {collider.x, collider.y, collider.width, collider.height};
-            SDL_RenderDrawRect(renderer, &colliderRect);
-        }
-    }
-
-    auto spriteView = _registry.view<TransformComponent, SpriteComponent>();
-    for (auto entity: spriteView) {
-        auto &transform = spriteView.get<TransformComponent>(entity);
-        auto &sprite = spriteView.get<SpriteComponent>(entity);
-        SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
-                            transform.width, transform.height};
-        SDL_Texture *texture = AssetManager::getInstance().loadTexture(sprite.textureName);
-        SDL_Rect srcRect = {sprite.x, sprite.y, sprite.width, sprite.height};
-        SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
-    }
-
-    auto textView = _registry.view<TransformComponent, TextComponent>();
-    for (auto entity: textView) {
-        auto &transform = textView.get<TransformComponent>(entity);
-        auto &text = textView.get<TextComponent>(entity);
-        TTF_Font *font = AssetManager::getInstance().loadFont(text.fontName, text.size);
-        SDL_Color color = {static_cast<Uint8>(text.textColor.r), static_cast<Uint8>(text.textColor.g),
-                           static_cast<Uint8>(text.textColor.b), static_cast<Uint8>(text.textColor.a)};
-        renderText(renderer, text.text.c_str(), font, static_cast<int>(transform.position.x),
-                   static_cast<int>(transform.position.y), transform.width,
-                   transform.height, color);
-    }
-
-    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
-    for (auto entity: buttonView) {
-        auto &transform = buttonView.get<TransformComponent>(entity);
-        auto &button = buttonView.get<ButtonComponent>(entity);
-        if (button.isHover) {
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            SDL_Rect rect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
-                             transform.width, transform.height};
-            SDL_RenderDrawRect(renderer, &rect);
-        }
-    }
+    _ecs.render(renderer, _isDebug);
 }
 
 void Scene::cleanup() {
-    _registry.clear();
-}
-
-void Scene::renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
-                       SDL_Color color) {
-    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
-    if (surface == nullptr) {
-        LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
-        return;
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (texture == nullptr) {
-        LOG_ERROR("Unable to create texture from rendered text! SDL_Error: {}", SDL_GetError());
-        SDL_FreeSurface(surface);
-        return;
-    }
-
-
-    // Calculate the center position
-    int textWidth = surface->w;
-    int textHeight = surface->h;
-    int centerX = x + (width - textWidth) / 2;
-    int centerY = y + (height - textHeight) / 2;
-
-    SDL_Rect dstRect = {centerX, centerY, textWidth, textHeight};
-    SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
-
-    SDL_DestroyTexture(texture);
-    SDL_FreeSurface(surface);
+    _ecs.cleanup();
 }
 
 bool Scene::switchScene() const {
