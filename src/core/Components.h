@@ -29,7 +29,9 @@ struct TransformComponent {
 };
 
 struct ColliderComponent {
-    int x, y, width, height, offsetX, offsetY;
+    int x, y, width, height;
+
+    ColliderComponent(int width, int height) : x(0), y(0), width(width), height(height) {}
 };
 
 struct SpriteComponent {

@@ -30,8 +30,8 @@ void EntityComponentSystem::update(float deltaTime, Input &input, bool debug) {
     for (auto entity: colliderView) {
         auto &transform = colliderView.get<TransformComponent>(entity);
         auto &collider = colliderView.get<ColliderComponent>(entity);
-        collider.x = static_cast<int>(transform.position.x) + collider.offsetX;
-        collider.y = static_cast<int>(transform.position.y) + collider.offsetY;
+        collider.x = static_cast<int>(transform.position.x) + (transform.width - collider.width) / 2;
+        collider.y = static_cast<int>(transform.position.y) + (transform.height - collider.height) / 2;
     }
 
     auto buttonView = registry.view<TransformComponent, ButtonComponent>();
@@ -97,11 +97,11 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         }
     }
 
-    if(debug) {
-        auto boundingBoxView = registry.view<TransformComponent, ColliderComponent>();
-        for (auto entity: boundingBoxView) {
-            auto &transform = boundingBoxView.get<TransformComponent>(entity);
-            auto &collider = boundingBoxView.get<ColliderComponent>(entity);
+    if (debug) {
+        auto colliderView = registry.view<TransformComponent, ColliderComponent>();
+        for (auto entity: colliderView) {
+            auto &transform = colliderView.get<TransformComponent>(entity);
+            auto &collider = colliderView.get<ColliderComponent>(entity);
 
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             // draw the bounding box

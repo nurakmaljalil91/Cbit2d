@@ -11,7 +11,10 @@
 
 #include "PlayScene.h"
 
-PlayScene::PlayScene() : Scene() {}
+PlayScene::PlayScene() :
+        _player(entt::null),
+        _enemy(entt::null),
+        Scene() {}
 
 PlayScene::~PlayScene() = default;
 
@@ -21,12 +24,12 @@ void PlayScene::setup() {
     _player = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
     _ecs.registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_player, 0, 0, 60, 60, 4, 4);
+    _ecs.registry.emplace<ColliderComponent>(_player, 45, 50);
 
     _enemy = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
     _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_enemy,0, 0, 58, 58, 4, 4);
+    _ecs.registry.emplace<ColliderComponent>(_enemy, 45, 50);
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
@@ -60,12 +63,12 @@ void PlayScene::update(float deltaTime, Input &input) {
     transform.position.x += transform.velocity.x * deltaTime;
     transform.position.y += transform.velocity.y * deltaTime;
 
-
     auto &playerCollider = _ecs.registry.get<ColliderComponent>(_player);
     auto &enemyCollider = _ecs.registry.get<ColliderComponent>(_enemy);
 
-    playerCollider.x = static_cast<int>(transform.position.x) + playerCollider.offsetX;
-    playerCollider.y = static_cast<int>(transform.position.y) + playerCollider.offsetY;
+    // Center the collider relative to the transform's position and size
+    playerCollider.x = static_cast<int>(transform.position.x + (transform.width - playerCollider.width) / 2);
+    playerCollider.y = static_cast<int>(transform.position.y + (transform.height - playerCollider.height) / 2);
 
     if (playerCollider.x < enemyCollider.x + enemyCollider.width &&
         playerCollider.x + playerCollider.width > enemyCollider.x &&

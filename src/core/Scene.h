@@ -68,9 +68,9 @@ protected:
 
     void playBGM(const std::string &name);
 
-    void stopBGM();
+    static void stopBGM();
 
-    void playSFX(const std::string &name);
+    static void playSFX(const std::string &name);
 };
 
 

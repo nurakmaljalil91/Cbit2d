@@ -33,7 +33,7 @@ public:
 
     entt::registry registry;
 
-    void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
+    static void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
                     SDL_Color color);
 };
 
