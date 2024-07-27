@@ -39,6 +39,6 @@ void MenuScene::setup() {
     });
 }
 
-void MenuScene::update(Input &input) {
-    Scene::update(input);
+void MenuScene::update(float deltaTime, Input &input) {
+    Scene::update(deltaTime, input);
 }

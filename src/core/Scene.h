@@ -31,7 +31,7 @@ public:
     // scene lifecycle
     virtual void setup();
 
-    virtual void update(Input& input);
+    virtual void update(float deltaTime, Input &input);
 
     void render(SDL_Renderer *renderer);
 

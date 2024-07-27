@@ -27,8 +27,6 @@ public:
 
     bool isQuit();
 
-    bool isFullscreen();
-
     bool isMouseButtonPressed(int button);
 
     bool isMouseButtonReleased(int button);

@@ -15,9 +15,17 @@
 
 #include <functional>
 #include "Type.h"
+#include <glm/glm.hpp>
 
 struct TransformComponent {
     int x, y, width, height;
+    int velocityX = 0;
+    int velocityY = 0;
+    int scale = 1;
+    glm::vec2 position = glm::vec2(x, y);
+    glm::vec2 velocity = glm::vec2(velocityX, velocityY);
+
+    TransformComponent(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
 };
 
 struct SpriteComponent {

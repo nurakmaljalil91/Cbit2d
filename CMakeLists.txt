@@ -49,6 +49,10 @@ include_directories(${SDL2_MIXER_PATH}/include)
 link_directories(${SDL2_MIXER_PATH}/lib)
 file(COPY ${SDL2_MIXER_PATH}/bin/SDL2_mixer.dll DESTINATION ${CMAKE_BINARY_DIR})
 
+# set GLM path
+set(GLM_PATH vendors/glm)
+include_directories(${GLM_PATH}/include)
+
 # Copy all files in the resources folder
 file(GLOB RESOURCES_FILES ${CMAKE_SOURCE_DIR}/application/resources/*)
 file(COPY ${RESOURCES_FILES} DESTINATION ${CMAKE_BINARY_DIR}/resources)

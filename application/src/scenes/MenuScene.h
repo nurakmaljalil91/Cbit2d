@@ -23,7 +23,7 @@ public:
 
     void setup() override;
 
-    void update(Input &input) override;
+    void update(float deltaTime, Input &input) override;
 };
 
 

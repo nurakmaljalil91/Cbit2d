@@ -18,19 +18,42 @@ PlayScene::~PlayScene() = default;
 void PlayScene::setup() {
     Scene::setup();
     toggleDebug();
-    auto _player = _registry.create();
+    _player = _registry.create();
     _registry.emplace<TransformComponent>(_player, 0, 0, 64, 64);
     _registry.emplace<SpriteComponent>(_player, "sokoban_tilesheet", 0, 256, 64, 64);
+
+    auto _enemy = _registry.create();
+    _registry.emplace<TransformComponent>(_enemy, 100, 100, 64, 64);
+    _registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 0, 256, 64, 64);
+
 }
 
-void PlayScene::update(Input &input) {
-    Scene::update(input);
+void PlayScene::update(float deltaTime, Input &input) {
+
+    // handle input for the player movement
+    auto &transform = _registry.get<TransformComponent>(_player);
     if (input.isKeyPressed(SDLK_w)) {
-        LOG_INFO("Moving up");
+        transform.velocity.x = 0;
+        transform.velocity.y = -200;
     }
+    if (input.isKeyPressed(SDLK_s)) {
+        transform.velocity.x = 0;
+        transform.velocity.y = 200;
+    }
+    if (input.isKeyPressed(SDLK_a)) {
+        transform.velocity.x = -200;
+        transform.velocity.y = 0;
+    }
+    if (input.isKeyPressed(SDLK_d)) {
+        transform.velocity.x = 200;
+        transform.velocity.y = 0;
+    }
+
     if (input.isKeyPressed(SDLK_RETURN)) {
         LOG_INFO("Changing scene to MenuScene");
         changeScene("MenuScene");
 
     }
+    Scene::update(deltaTime, input);
+
 }

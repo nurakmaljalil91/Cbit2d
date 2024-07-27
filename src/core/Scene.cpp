@@ -20,13 +20,23 @@ void Scene::setup() {
     stopBGM();
 }
 
-void Scene::update(Input &input) {
+void Scene::update(float deltaTime, Input &input) {
     // if debug mode is on, log the coordinates of the mouse when clicked
     int mouseX, mouseY;
     if (_isDebug && input.isMouseButtonPressed(SDL_MOUSEBUTTONDOWN)) {
 
         SDL_GetMouseState(&mouseX, &mouseY);
         LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
+    }
+
+    auto transformView = _registry.view<TransformComponent>();
+    for (auto entity: transformView) {
+        auto &transform = transformView.get<TransformComponent>(entity);
+        transform.position.x = transform.position.x + transform.velocity.x * deltaTime;
+        transform.position.y = transform.position.y + transform.velocity.y * deltaTime;
+
+        transform.velocity.x = 0;
+        transform.velocity.y = 0;
     }
 
     auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
@@ -36,8 +46,10 @@ void Scene::update(Input &input) {
         // hover
         input.getMousePosition(mouseX, mouseY);
         if (mouseX != 0 || mouseY != 0) {
-            if (mouseX >= transform.x && mouseX <= transform.x + transform.width &&
-                mouseY >= transform.y && mouseY <= transform.y + transform.height) {
+            if (mouseX >= static_cast<int>(transform.position.x) &&
+                mouseX <= static_cast<int>(transform.position.x) + transform.width &&
+                mouseY >= static_cast<int>(transform.position.y) &&
+                mouseY <= static_cast<int>(transform.position.y) + transform.height) {
                 button.isHover = true;
                 SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
             } else {
@@ -88,16 +100,18 @@ void Scene::render(SDL_Renderer *renderer) {
         if (_isDebug) {
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             // draw the bounding box
-            SDL_Rect rect = {transform.x, transform.y, transform.width, transform.height};
+            SDL_Rect rect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
+                             transform.width, transform.height};
             SDL_RenderDrawRect(renderer, &rect);
         }
     }
 
     auto spriteView = _registry.view<TransformComponent, SpriteComponent>();
     for (auto entity: spriteView) {
-        auto &position = spriteView.get<TransformComponent>(entity);
+        auto &transform = spriteView.get<TransformComponent>(entity);
         auto &sprite = spriteView.get<SpriteComponent>(entity);
-        SDL_Rect dstRect = {position.x, position.y, position.width, position.height};
+        SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
+                            transform.width, transform.height};
         SDL_Texture *texture = AssetManager::getInstance().loadTexture(sprite.textureName);
         SDL_Rect srcRect = {sprite.x, sprite.y, sprite.width, sprite.height};
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
@@ -105,21 +119,24 @@ void Scene::render(SDL_Renderer *renderer) {
 
     auto textView = _registry.view<TransformComponent, TextComponent>();
     for (auto entity: textView) {
-        auto &position = textView.get<TransformComponent>(entity);
+        auto &transform = textView.get<TransformComponent>(entity);
         auto &text = textView.get<TextComponent>(entity);
         TTF_Font *font = AssetManager::getInstance().loadFont(text.fontName, text.size);
         SDL_Color color = {static_cast<Uint8>(text.textColor.r), static_cast<Uint8>(text.textColor.g),
                            static_cast<Uint8>(text.textColor.b), static_cast<Uint8>(text.textColor.a)};
-        renderText(renderer, text.text.c_str(), font, position.x, position.y, position.width, position.height, color);
+        renderText(renderer, text.text.c_str(), font, static_cast<int>(transform.position.x),
+                   static_cast<int>(transform.position.y), transform.width,
+                   transform.height, color);
     }
 
     auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
     for (auto entity: buttonView) {
-        auto &position = buttonView.get<TransformComponent>(entity);
+        auto &transform = buttonView.get<TransformComponent>(entity);
         auto &button = buttonView.get<ButtonComponent>(entity);
         if (button.isHover) {
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            SDL_Rect rect = {position.x, position.y, position.width, position.height};
+            SDL_Rect rect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
+                             transform.width, transform.height};
             SDL_RenderDrawRect(renderer, &rect);
         }
     }

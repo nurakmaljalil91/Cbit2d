@@ -41,10 +41,9 @@ private:
     SDL_Renderer *_renderer;
     bool _isQuit;
     bool _isFullscreen = false;
-    bool _isAllowToggleFullscreen = false;
-    SDL_Event _event{};
     Input _input;
     TTF_Font* _defaultFont;
+    Uint32 _lastFrameTick;
 
     // fullscreen
     void toggleFullscreen();

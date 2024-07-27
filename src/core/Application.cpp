@@ -21,7 +21,7 @@ Application::Application(const char *windowTitle, int windowWidth, int windowHei
         _renderer(nullptr),
         _isQuit(false),
         _defaultFont(nullptr),
-        _isAllowToggleFullscreen(isFullscreen) {}
+        _isFullscreen(isFullscreen) {}
 
 
 Application::~Application() {
@@ -46,13 +46,13 @@ bool Application::init() {
         return false;
     }
 
-    if (_isAllowToggleFullscreen) {
-        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
-                                   _windowHeight,
+    if (_isFullscreen) {
+        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   _windowWidth, _windowHeight,
                                    SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN);
     } else {
-        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, _windowWidth,
-                                   _windowHeight,
+        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   _windowWidth, _windowHeight,
                                    SDL_WINDOW_SHOWN);
     }
 
@@ -92,49 +92,41 @@ bool Application::init() {
 
 void Application::run() {
     _lastFPSTime = SDL_GetTicks(); // Initialize the last FPS update time
+    float deltaTime = 0.0f;
+    _lastFrameTick = SDL_GetTicks();
 
     while (!_isQuit) {
         Uint32 startTick = SDL_GetTicks();
 
         _input.update();
 
-        if (_input.isQuit()) {
+        if (_input.isQuit() || _input.isKeyPressed(SDLK_ESCAPE)) {
             _isQuit = true;
         }
 
-        if (_input.isFullscreen()) {
-            if (_isFullscreen) {
-                SDL_SetWindowFullscreen(_window, SDL_WINDOW_FULLSCREEN); // Switch to fullscreen mode
-            } else {
-                SDL_SetWindowFullscreen(_window, 0); // Switch to windowed mode
-            }
-            _isFullscreen = !_isFullscreen;
-        }
-
-        if (_input.isKeyPressed(SDLK_ESCAPE)) {
-            _isQuit = true;
-        }
-
-        // Toggle fullscreen with F11 key
         if (_input.isKeyPressed(SDLK_F11)) {
             toggleFullscreen();
         }
 
-        _sceneManager.update(_input);
-
-        SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
-        SDL_RenderClear(_renderer);
-
-        _sceneManager.render(_renderer);
+        // Calculate delta time
+        Uint32 currentTick = SDL_GetTicks();
+        deltaTime = static_cast<float>(currentTick - _lastFrameTick) / 1000.0f;
+        _lastFrameTick = currentTick;
 
         // Calculate FPS
         _frameCount++;
-        Uint32 currentTick = SDL_GetTicks();
         if (currentTick - _lastFPSTime >= 1000) { // Update FPS every second
             _fps = _frameCount;
             _frameCount = 0;
             _lastFPSTime = currentTick;
         }
+
+        _sceneManager.update(deltaTime, _input);
+
+        SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
+        SDL_RenderClear(_renderer);
+
+        _sceneManager.render(_renderer);
 
         // Display FPS
         std::string fpsText = "FPS: " + std::to_string(_fps);

@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     app.getSceneManager().addScene("MenuScene", std::make_shared<MenuScene>());
     app.getSceneManager().addScene("PlayScene", std::make_shared<PlayScene>());
-    app.getSceneManager().setActiveScene("MenuScene");
+    app.getSceneManager().setActiveScene("PlayScene");
 
     app.run();
 
