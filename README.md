@@ -8,6 +8,12 @@ Cbit2d is a custom 2D game engine built as a shared library, utilizing SDL2 for 
 - Easy integration with SDL2 for graphics and input handling
 - Logging with spdlog for detailed runtime information
 - Modular design for extensibility
+- Use of the EnTT library for ECS functionality
+- Cross-platform support (Windows, macOS, Linux)
+- C++17 compatible
+- Lightweight and easy to use
+- Open-source and free to use
+- MIT License
 
 ## Requirements
 
@@ -108,6 +114,32 @@ int main() {
     return 0;
 }
 ```
+
+Create your scene and add too scene manager
+
+```cpp
+
+#include "Scene.h"
+
+class MyScene : public Scene {
+public:
+    MyScene() : Scene("MyScene") {
+        // Initialize your scene here
+    }
+
+    void setup() override {
+        // Called when the scene is attached to the scene manager
+        // setup your scene here
+    }
+
+    void update(float deltaTime, Input &input) override {
+        // Called every frame
+        // Update your scene here
+    }
+};
+
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
