@@ -54,6 +54,13 @@ void TileMap::loadMap(std::string textureName, std::string jsonFile, int tileWid
                                 (index / width) * tileHeight,
                                 tileWidth, tileHeight};
                         _tiles.push_back(newTile);
+
+                        if(name == "Wall") {
+                            LOG_INFO("Wall at x: {}, y: {}", newTile.destRect.x, newTile.destRect.y);
+                            auto entity = registry.create();
+                            registry.emplace<TransformComponent>(entity, newTile.destRect.x, newTile.destRect.y, newTile.destRect.w, newTile.destRect.h);
+                            registry.emplace<ColliderComponent>(entity, newTile.destRect.w, newTile.destRect.h);
+                        }
                     }
                     index++;
                 }

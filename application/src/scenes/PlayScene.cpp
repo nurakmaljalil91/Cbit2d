@@ -20,7 +20,7 @@ PlayScene::~PlayScene() = default;
 
 void PlayScene::setup() {
     Scene::setup();
-//    toggleDebug();
+    toggleDebug();
 
     // load map
     _tileMap.loadMap("sokoban_tilesheet", "resources/maps/basic.json", 64, 64, _ecs.registry);

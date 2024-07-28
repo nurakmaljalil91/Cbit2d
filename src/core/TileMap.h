@@ -17,6 +17,7 @@
 #include "AssetManager.h"
 #include "../utilities/Logger.h"
 #include <entt/entt.hpp>
+#include "Components.h"
 
 struct Tile {
     int gid;
