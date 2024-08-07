@@ -20,14 +20,14 @@ PlayScene::~PlayScene() = default;
 
 void PlayScene::setup() {
     Scene::setup();
-    toggleDebug();
+//    toggleDebug();
 
     // load map
     _tileMap.loadMap("sokoban_tilesheet", "resources/maps/basic.json", 64, 64, _ecs.registry);
 
     _player = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_player, 64, 64, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_player, 45, 50);
+    _ecs.registry.emplace<ColliderComponent>(_player,"player", 45, 50);
     auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64);
     animatedSprite.addAnimation("idle", 0, 256, 1, 0.2f);
     animatedSprite.addAnimation("down", 0, 256, 3, 0.2f);
@@ -39,7 +39,7 @@ void PlayScene::setup() {
     _enemy = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_enemy, 192, 192, 64, 64);
     _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_enemy, 64, 64);
+    _ecs.registry.emplace<ColliderComponent>(_enemy,"enemy", 64, 64);
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
@@ -81,22 +81,47 @@ void PlayScene::update(float deltaTime, Input &input) {
     transform.position.y += transform.velocity.y * deltaTime;
 
     auto &playerCollider = _ecs.registry.get<ColliderComponent>(_player);
-    auto &enemyCollider = _ecs.registry.get<ColliderComponent>(_enemy);
+//    auto &enemyCollider = _ecs.registry.get<ColliderComponent>(_enemy);
 
     // Center the collider relative to the transform's position and size
     playerCollider.x = static_cast<int>(transform.position.x ) + (transform.width - playerCollider.width) / 2;
     playerCollider.y = static_cast<int>(transform.position.y) + (transform.height - playerCollider.height) / 2;
+//
+//    if (playerCollider.x < enemyCollider.x + enemyCollider.width &&
+//        playerCollider.x + playerCollider.width > enemyCollider.x &&
+//        playerCollider.y < enemyCollider.y + enemyCollider.height &&
+//        playerCollider.y + playerCollider.height > enemyCollider.y) {
+////        LOG_INFO("Player collided with enemy");
+//        // Resolve collision: Reset position to previous state
+//        transform.position.x -= transform.velocity.x * deltaTime;
+//        transform.position.y -= transform.velocity.y * deltaTime;
+//        transform.velocity.x = 0;
+//        transform.velocity.y = 0;
+//    }
 
-    if (playerCollider.x < enemyCollider.x + enemyCollider.width &&
-        playerCollider.x + playerCollider.width > enemyCollider.x &&
-        playerCollider.y < enemyCollider.y + enemyCollider.height &&
-        playerCollider.y + playerCollider.height > enemyCollider.y) {
-//        LOG_INFO("Player collided with enemy");
-        // Resolve collision: Reset position to previous state
-        transform.position.x -= transform.velocity.x * deltaTime;
-        transform.position.y -= transform.velocity.y * deltaTime;
-        transform.velocity.x = 0;
-        transform.velocity.y = 0;
+    // Check for collision with walls
+    auto view = _ecs.registry.view<TransformComponent, ColliderComponent>();
+
+    for (auto entity: view) {
+        if(entity == _player) continue;
+
+        auto &otherTransform = view.get<TransformComponent>(entity);
+        auto &otherCollider = view.get<ColliderComponent>(entity);
+
+
+        if (otherCollider.tag == "wall" || otherCollider.tag == "enemy") {
+            if (playerCollider.x < otherCollider.x + otherCollider.width &&
+                playerCollider.x + playerCollider.width > otherCollider.x &&
+                playerCollider.y < otherCollider.y + otherCollider.height &&
+                playerCollider.y + playerCollider.height > otherCollider.y) {
+                LOG_INFO("Player collided with wall");
+                // Resolve collision: Reset position to previous state
+                transform.position.x -= transform.velocity.x * deltaTime;
+                transform.position.y -= transform.velocity.y * deltaTime;
+                transform.velocity.x = 0;
+                transform.velocity.y = 0;
+            }
+        }
     }
 
     // Reset velocity if no movement key is pressed

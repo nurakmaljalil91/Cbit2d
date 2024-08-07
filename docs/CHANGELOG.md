@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2024-08-07
+
+- Add collision detection for player and walls.
+
 ### 2024-07-27
 
 #### Added

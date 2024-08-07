@@ -16,6 +16,7 @@
 #include <functional>
 #include "Type.h"
 #include <glm/glm.hpp>
+#include <utility>
 
 struct TransformComponent {
     int x, y, width, height;
@@ -29,9 +30,10 @@ struct TransformComponent {
 };
 
 struct ColliderComponent {
+    std::string tag;
     int x, y, width, height;
 
-    ColliderComponent(int width, int height) : x(0), y(0), width(width), height(height) {}
+    ColliderComponent(std::string tag, int width, int height) : tag(std::move(tag)), x(0), y(0), width(width), height(height) {}
 };
 
 struct SpriteComponent {
