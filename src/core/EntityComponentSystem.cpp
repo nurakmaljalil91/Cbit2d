@@ -83,6 +83,18 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
     }
 
+    auto multipleView = registry.view<TransformComponent, MultipleSpriteComponent>();
+    for (auto entity: multipleView) {
+        auto &transform = multipleView.get<TransformComponent>(entity);
+        auto &multipleSprite = multipleView.get<MultipleSpriteComponent>(entity);
+        SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
+                            transform.width, transform.height};
+        SDL_Texture *texture = AssetManager::getInstance().loadTexture(multipleSprite.sprites[multipleSprite.currentSprite].textureName);
+        SDL_Rect srcRect = {multipleSprite.sprites[multipleSprite.currentSprite].x, multipleSprite.sprites[multipleSprite.currentSprite].y,
+                            multipleSprite.sprites[multipleSprite.currentSprite].width, multipleSprite.sprites[multipleSprite.currentSprite].height};
+        SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+    }
+
     auto animatedSpriteView = registry.view<TransformComponent, AnimatedSpriteComponent>();
     for (auto entity: animatedSpriteView) {
         auto &transform = animatedSpriteView.get<TransformComponent>(entity);

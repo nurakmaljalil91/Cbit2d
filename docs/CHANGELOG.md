@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2024-08-09
+
+- Add multiple sprite component
+
 ### 2024-08-07
 
 - Add collision detection for player and walls.

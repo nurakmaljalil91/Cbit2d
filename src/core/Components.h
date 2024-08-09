@@ -33,12 +33,18 @@ struct ColliderComponent {
     std::string tag;
     int x, y, width, height;
 
-    ColliderComponent(std::string tag, int width, int height) : tag(std::move(tag)), x(0), y(0), width(width), height(height) {}
+    ColliderComponent(std::string tag, int width, int height) : tag(std::move(tag)), x(0), y(0), width(width),
+                                                                height(height) {}
 };
 
 struct SpriteComponent {
     std::string textureName;
     int x, y, width, height;
+};
+
+struct MultipleSpriteComponent {
+    std::unordered_map<std::string, SpriteComponent> sprites;
+    std::string currentSprite;
 };
 
 struct Animation {
@@ -72,7 +78,7 @@ struct AnimatedSpriteComponent {
         }
     }
 
-    const Animation& getCurrentAnimation() {
+    const Animation &getCurrentAnimation() {
         return animations[currentAnimation];
     }
 };
