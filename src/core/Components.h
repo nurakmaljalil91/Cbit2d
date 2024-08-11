@@ -40,6 +40,11 @@ struct ColliderComponent {
 struct SpriteComponent {
     std::string textureName;
     int x, y, width, height;
+
+    SpriteComponent() = default;
+
+    SpriteComponent(std::string textureName, int x, int y, int width, int height) :
+            textureName(std::move(textureName)), x(x), y(y), width(width), height(height) {}
 };
 
 struct MultipleSpriteComponent {
@@ -95,5 +100,14 @@ struct ButtonComponent {
     bool isHover;
 };
 
+struct DraggableComponent {
+    bool isDragging;
+    glm::vec2 offset;
+};
+
+struct ClickableComponent {
+    bool isClicked;
+    bool isHover;
+};
 
 #endif //CBIT2D_COMPONENTS_H

@@ -15,16 +15,7 @@ EntityComponentSystem::EntityComponentSystem() = default;
 
 EntityComponentSystem::~EntityComponentSystem() = default;
 
-void EntityComponentSystem::update(float deltaTime, Input &input, bool debug) {
-//    auto transformView = _registry.view<TransformComponent>();
-//    for (auto entity: transformView) {
-//        auto &transform = transformView.get<TransformComponent>(entity);
-//        transform.position.x = transform.position.x + transform.velocity.x * deltaTime;
-//        transform.position.y = transform.position.y + transform.velocity.y * deltaTime;
-//
-//        transform.velocity.x = 0;
-//        transform.velocity.y = 0;
-//    }
+void EntityComponentSystem::update(float deltaTime, Input &input) {
     int mouseX, mouseY;
     auto colliderView = registry.view<TransformComponent, ColliderComponent>();
     for (auto entity: colliderView) {
@@ -56,6 +47,7 @@ void EntityComponentSystem::update(float deltaTime, Input &input, bool debug) {
         if (input.isMouseButtonPressed(SDL_BUTTON_LEFT)) {
             if (button.isHover) {
                 button.onClick();
+                SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
             }
         }
     }
@@ -65,8 +57,60 @@ void EntityComponentSystem::update(float deltaTime, Input &input, bool debug) {
         auto &animatedSprite = animatedSpriteView.get<AnimatedSpriteComponent>(entity);
         animatedSprite.currentTime += deltaTime;
         if (animatedSprite.currentTime >= animatedSprite.getCurrentAnimation().frameTime) {
-            animatedSprite.currentFrame = (animatedSprite.currentFrame + 1) % animatedSprite.getCurrentAnimation().frameCount;
+            animatedSprite.currentFrame =
+                    (animatedSprite.currentFrame + 1) % animatedSprite.getCurrentAnimation().frameCount;
             animatedSprite.currentTime = 0;
+        }
+    }
+
+    auto draggableView = registry.view<TransformComponent, DraggableComponent>();
+    for (auto entity: draggableView) {
+        auto &transform = draggableView.get<TransformComponent>(entity);
+        auto &draggable = draggableView.get<DraggableComponent>(entity);
+        input.getMousePosition(mouseX, mouseY);
+
+        if (input.isMouseButtonPressed(SDL_BUTTON_LEFT)) {
+            if (!draggable.isDragging) {
+                // Check if the mouse is within the bounds of the entity
+                if (mouseX >= static_cast<int>(transform.position.x) &&
+                    mouseX <= static_cast<int>(transform.position.x) + transform.width &&
+                    mouseY >= static_cast<int>(transform.position.y) &&
+                    mouseY <= static_cast<int>(transform.position.y) + transform.height) {
+
+                    draggable.isDragging = true;
+                    // Calculate the offset when the dragging starts
+                    draggable.offset.x = static_cast<float>(mouseX) - transform.position.x;
+                    draggable.offset.y = static_cast<float>(mouseY) - transform.position.y;
+                }
+            }
+        }
+
+        if (input.isMouseButtonReleased(SDL_BUTTON_LEFT)) {
+            draggable.isDragging = false;
+        }
+
+        if (draggable.isDragging) {
+            // Update the entity's position based on the mouse position and the offset
+            transform.position.x = static_cast<float>(mouseX) - draggable.offset.x;
+            transform.position.y = static_cast<float>(mouseY) - draggable.offset.y;
+        }
+    }
+
+    auto clickableView = registry.view<TransformComponent, ClickableComponent>();
+    for (auto entity: clickableView) {
+        auto &transform = clickableView.get<TransformComponent>(entity);
+        auto &clickable = clickableView.get<ClickableComponent>(entity);
+        input.getMousePosition(mouseX, mouseY);
+        if (mouseX >= static_cast<int>(transform.position.x) &&
+            mouseX <= static_cast<int>(transform.position.x) + transform.width &&
+            mouseY >= static_cast<int>(transform.position.y) &&
+            mouseY <= static_cast<int>(transform.position.y) + transform.height) {
+            clickable.isHover = true;
+            if (input.isMouseButtonPressed(SDL_BUTTON_LEFT)) {
+                clickable.isClicked = true;
+            }
+        } else {
+            clickable.isHover = false;
         }
     }
 }
@@ -89,9 +133,12 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         auto &multipleSprite = multipleView.get<MultipleSpriteComponent>(entity);
         SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
                             transform.width, transform.height};
-        SDL_Texture *texture = AssetManager::getInstance().loadTexture(multipleSprite.sprites[multipleSprite.currentSprite].textureName);
-        SDL_Rect srcRect = {multipleSprite.sprites[multipleSprite.currentSprite].x, multipleSprite.sprites[multipleSprite.currentSprite].y,
-                            multipleSprite.sprites[multipleSprite.currentSprite].width, multipleSprite.sprites[multipleSprite.currentSprite].height};
+        SDL_Texture *texture = AssetManager::getInstance().loadTexture(
+                multipleSprite.sprites[multipleSprite.currentSprite].textureName);
+        SDL_Rect srcRect = {multipleSprite.sprites[multipleSprite.currentSprite].x,
+                            multipleSprite.sprites[multipleSprite.currentSprite].y,
+                            multipleSprite.sprites[multipleSprite.currentSprite].width,
+                            multipleSprite.sprites[multipleSprite.currentSprite].height};
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
     }
 
@@ -102,7 +149,8 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
                             transform.width, transform.height};
         SDL_Texture *texture = AssetManager::getInstance().loadTexture(animatedSprite.textureName);
-        SDL_Rect srcRect = {animatedSprite.getCurrentAnimation().x + animatedSprite.currentFrame * animatedSprite.width, animatedSprite.getCurrentAnimation().y,
+        SDL_Rect srcRect = {animatedSprite.getCurrentAnimation().x + animatedSprite.currentFrame * animatedSprite.width,
+                            animatedSprite.getCurrentAnimation().y,
                             animatedSprite.width, animatedSprite.height};
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
 

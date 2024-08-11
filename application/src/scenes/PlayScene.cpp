@@ -40,6 +40,11 @@ void PlayScene::setup() {
     _ecs.registry.emplace<TransformComponent>(_enemy, 192, 192, 64, 64);
     _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64);
     _ecs.registry.emplace<ColliderComponent>(_enemy,"enemy", 64, 64);
+
+    auto crate = _ecs.registry.create();
+    _ecs.registry.emplace<TransformComponent>(crate, 128, 128, 64, 64);
+    _ecs.registry.emplace<SpriteComponent>(crate, "sokoban_tilesheet", 64, 64, 64, 64);
+    _ecs.registry.emplace<DraggableComponent>(crate);
 }
 
 void PlayScene::update(float deltaTime, Input &input) {

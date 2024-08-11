@@ -29,7 +29,7 @@ void Scene::update(float deltaTime, Input &input) {
         LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
     }
 
-    _ecs.update(deltaTime, input, _isDebug);
+    _ecs.update(deltaTime, input);
 }
 
 void Scene::render(SDL_Renderer *renderer) {

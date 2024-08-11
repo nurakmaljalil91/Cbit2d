@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2024-08-10
+
+- Add clickable and draggable components
+
 ### 2024-08-09
 
 - Add multiple sprite component

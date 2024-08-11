@@ -32,13 +32,27 @@ void MenuScene::setup() {
     _ecs.registry.emplace<TransformComponent>(_playButton, 339, 258, 150, 50);
     _ecs.registry.emplace<TextComponent>(_playButton, "Play", "Kenney_Future", 32, Color{255, 255, 255, 255});
     _ecs.registry.emplace<SpriteComponent>(_playButton, "button_rectangle_depth_flat", 0, 0, 384, 128);
-    _ecs.registry.emplace<ButtonComponent>(_playButton, [this]() {
-        LOG_INFO("Changing scene to PlayScene");
-        playSFX("click-a");
-        changeScene("PlayScene");
-    });
+//    _ecs.registry.emplace<ButtonComponent>(_playButton, [this]() {
+//        LOG_INFO("Changing scene to PlayScene");
+//        playSFX("click-a");
+//        changeScene("PlayScene");
+//    });
+
+    _ecs.registry.emplace<ClickableComponent>(_playButton);
 }
 
 void MenuScene::update(float deltaTime, Input &input) {
     Scene::update(deltaTime, input);
+
+    auto clickableView = _ecs.registry.view<ClickableComponent>();
+
+    for (auto entity : clickableView) {
+        auto &clickableComponent = clickableView.get<ClickableComponent>(entity);
+        if (clickableComponent.isClicked) {
+            LOG_INFO("Changing scene to PlayScene");
+            playSFX("click-a");
+            changeScene("PlayScene");
+        }
+    }
+
 }

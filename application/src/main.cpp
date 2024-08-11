@@ -16,9 +16,12 @@
 #include "scenes/PlayScene.h"
 //#include <simdjson.h>
 
+#define WINDOW_WIDTH 832
+#define WINDOW_HEIGHT 640
+
 int main(int argc, char *argv[]) {
 
-    Application app("CBit 2D Application", 832, 640, false);
+    Application app("CBit 2D Application", WINDOW_WIDTH, WINDOW_HEIGHT, false);
 
     if (!app.init()) {
         return -1;

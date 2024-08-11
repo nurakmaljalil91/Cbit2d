@@ -25,7 +25,7 @@ public:
 
     ~EntityComponentSystem();
 
-    void update(float deltaTime, Input &input, bool debug);
+    void update(float deltaTime, Input &input);
 
     void render(SDL_Renderer *renderer, bool debug);
 
