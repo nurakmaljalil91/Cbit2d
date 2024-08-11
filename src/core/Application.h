@@ -19,6 +19,13 @@
 #include "SceneManager.h"
 #include "Input.h"
 
+struct WindowConfig {
+    const char *title;
+    int width;
+    int height;
+    bool isFullscreen = false;
+};
+
 class Application {
 public:
     Application(const char *windowTitle, int windowWidth, int windowHeight, bool isFullscreen);
@@ -34,16 +41,15 @@ public:
     SceneManager &getSceneManager();
 
 private:
+    WindowConfig _windowConfig;
     SDL_Window *_window;
-    const char *_windowTitle;
-    int _windowWidth;
-    int _windowHeight;
     SDL_Renderer *_renderer;
     bool _isQuit;
-    bool _isFullscreen = false;
     Input _input;
-    TTF_Font* _defaultFont;
-    Uint32 _lastFrameTick;
+
+    // fonts
+    TTF_Font *_defaultFont;
+    Uint32 _lastFrameTick{};
 
     // fullscreen
     void toggleFullscreen();
@@ -56,7 +62,8 @@ private:
     // manager
     SceneManager _sceneManager;
 
-    void renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
+    static void
+    renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };
 
 #endif //CBIT2D_APPLICATION_H

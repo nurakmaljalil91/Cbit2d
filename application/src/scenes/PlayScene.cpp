@@ -28,7 +28,7 @@ void PlayScene::setup() {
     _player = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_player, 64, 64, 64, 64);
     _ecs.registry.emplace<ColliderComponent>(_player, "player", 45, 50);
-    auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64);
+    auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64, 1);
     animatedSprite.addAnimation("idle", 0, 256, 1, 0.2f);
     animatedSprite.addAnimation("down", 0, 256, 3, 0.2f);
     animatedSprite.addAnimation("up", 192, 256, 3, 0.2f);
@@ -38,12 +38,12 @@ void PlayScene::setup() {
 
     _enemy = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_enemy, 192, 192, 64, 64);
-    _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64);
+    _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64, 2);
     _ecs.registry.emplace<ColliderComponent>(_enemy, "enemy", 64, 64);
 
     auto crate = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(crate, 128, 128, 64, 64);
-    _ecs.registry.emplace<SpriteComponent>(crate, "sokoban_tilesheet", 64, 64, 64, 64);
+    _ecs.registry.emplace<SpriteComponent>(crate, "sokoban_tilesheet", 64, 64, 64, 64, 3);
     _ecs.registry.emplace<DraggableComponent>(crate);
 }
 

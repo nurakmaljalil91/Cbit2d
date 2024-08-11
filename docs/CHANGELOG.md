@@ -5,6 +5,8 @@
 ### 2024-08-10
 
 - Fixing the input class to handle key held down events.
+- Adding layering to the rendering system.
+- Add install library script
 
 ### 2024-08-10
 

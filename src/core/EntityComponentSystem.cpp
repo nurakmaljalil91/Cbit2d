@@ -117,7 +117,18 @@ void EntityComponentSystem::update(float deltaTime, Input &input) {
 
 void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
     auto spriteView = registry.view<TransformComponent, SpriteComponent>();
-    for (auto entity: spriteView) {
+
+    // Create a vector of entities to sort based on their layer
+    std::vector<entt::entity> spriteEntities(spriteView.begin(), spriteView.end());
+
+    // Sort entities by the layer value
+    std::sort(spriteEntities.begin(), spriteEntities.end(), [&](entt::entity a, entt::entity b) {
+        auto &transformA = spriteView.get<SpriteComponent>(a);
+        auto &transformB = spriteView.get<SpriteComponent>(b);
+        return transformA.layer < transformB.layer;
+    });
+
+    for (auto entity: spriteEntities) {
         auto &transform = spriteView.get<TransformComponent>(entity);
         auto &sprite = spriteView.get<SpriteComponent>(entity);
         SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
@@ -128,7 +139,18 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
     }
 
     auto multipleView = registry.view<TransformComponent, MultipleSpriteComponent>();
-    for (auto entity: multipleView) {
+
+    // Create a vector of entities to sort based on their layer
+    std::vector<entt::entity> multipleSpriteEntities(multipleView.begin(), multipleView.end());
+
+    // Sort entities by the layer value
+    std::sort(multipleSpriteEntities.begin(), multipleSpriteEntities.end(), [&](entt::entity a, entt::entity b) {
+        auto &transformA = multipleView.get<MultipleSpriteComponent>(a);
+        auto &transformB = multipleView.get<MultipleSpriteComponent>(b);
+        return transformA.layer < transformB.layer;
+    });
+
+    for (auto entity: multipleSpriteEntities) {
         auto &transform = multipleView.get<TransformComponent>(entity);
         auto &multipleSprite = multipleView.get<MultipleSpriteComponent>(entity);
         SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),
@@ -143,7 +165,18 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
     }
 
     auto animatedSpriteView = registry.view<TransformComponent, AnimatedSpriteComponent>();
-    for (auto entity: animatedSpriteView) {
+
+    // Create a vector of entities to sort based on their layer
+    std::vector<entt::entity> animatedSpriteEntities(animatedSpriteView.begin(), animatedSpriteView.end());
+
+    // Sort entities by the layer value
+    std::sort(animatedSpriteEntities.begin(), animatedSpriteEntities.end(), [&](entt::entity a, entt::entity b) {
+        auto &transformA = animatedSpriteView.get<AnimatedSpriteComponent>(a);
+        auto &transformB = animatedSpriteView.get<AnimatedSpriteComponent>(b);
+        return transformA.layer < transformB.layer;
+    });
+
+    for (auto entity: animatedSpriteEntities) {
         auto &transform = animatedSpriteView.get<TransformComponent>(entity);
         auto &animatedSprite = animatedSpriteView.get<AnimatedSpriteComponent>(entity);
         SDL_Rect dstRect = {static_cast<int>(transform.position.x), static_cast<int>(transform.position.y),

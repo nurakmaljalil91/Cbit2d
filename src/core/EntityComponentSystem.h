@@ -14,6 +14,7 @@
 
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
+#include <vector>
 #include "Input.h"
 #include "Components.h"
 #include "AssetManager.h"

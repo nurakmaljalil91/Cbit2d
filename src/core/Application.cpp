@@ -14,14 +14,15 @@
 #include "AssetManager.h"
 
 Application::Application(const char *windowTitle, int windowWidth, int windowHeight, bool isFullscreen) :
-        _windowTitle(windowTitle),
-        _windowWidth(windowWidth),
-        _windowHeight(windowHeight),
         _window(nullptr),
         _renderer(nullptr),
         _isQuit(false),
-        _defaultFont(nullptr),
-        _isFullscreen(isFullscreen) {}
+        _defaultFont(nullptr) {
+    _windowConfig.title = windowTitle;
+    _windowConfig.width = windowWidth;
+    _windowConfig.height = windowHeight;
+    _windowConfig.isFullscreen = isFullscreen;
+}
 
 
 Application::~Application() {
@@ -46,13 +47,13 @@ bool Application::init() {
         return false;
     }
 
-    if (_isFullscreen) {
-        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   _windowWidth, _windowHeight,
+    if (_windowConfig.isFullscreen) {
+        _window = SDL_CreateWindow(_windowConfig.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   _windowConfig.width, _windowConfig.height,
                                    SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN);
     } else {
-        _window = SDL_CreateWindow(_windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   _windowWidth, _windowHeight,
+        _window = SDL_CreateWindow(_windowConfig.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   _windowConfig.width, _windowConfig.height,
                                    SDL_WINDOW_SHOWN);
     }
 
@@ -92,7 +93,7 @@ bool Application::init() {
 
 void Application::run() {
     _lastFPSTime = SDL_GetTicks(); // Initialize the last FPS update time
-    float deltaTime = 0.0f;
+    float deltaTime;
     _lastFrameTick = SDL_GetTicks();
 
     while (!_isQuit) {

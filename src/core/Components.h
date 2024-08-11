@@ -39,17 +39,21 @@ struct ColliderComponent {
 
 struct SpriteComponent {
     std::string textureName;
-    int x, y, width, height;
+    int x, y, width, height, layer;
 
-    SpriteComponent() = default;
+    SpriteComponent() : x(0), y(0), width(0), height(0), layer(1) {};
 
     SpriteComponent(std::string textureName, int x, int y, int width, int height) :
-            textureName(std::move(textureName)), x(x), y(y), width(width), height(height) {}
+            textureName(std::move(textureName)), x(x), y(y), width(width), height(height), layer(1) {}
+
+    SpriteComponent(std::string textureName, int x, int y, int width, int height, int layer) :
+            textureName(std::move(textureName)), x(x), y(y), width(width), height(height), layer(layer) {}
 };
 
 struct MultipleSpriteComponent {
     std::unordered_map<std::string, SpriteComponent> sprites;
     std::string currentSprite;
+    int layer;
 };
 
 struct Animation {
@@ -66,9 +70,10 @@ struct AnimatedSpriteComponent {
     float currentTime;       // Time accumulator for the current frame
     std::unordered_map<std::string, Animation> animations; // Different animations
     std::string currentAnimation; // The current animation name
+    int layer;
 
-    AnimatedSpriteComponent(std::string textureName, int width, int height) :
-            textureName(textureName), width(width), height(height),
+    AnimatedSpriteComponent(std::string textureName, int width, int height, int layer) :
+            textureName(std::move(textureName)), width(width), height(height), layer(layer),
             currentFrame(0), currentTime(0) {}
 
     void addAnimation(const std::string &name, int x, int y, int frameCount, float frameTime) {
