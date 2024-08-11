@@ -20,7 +20,7 @@ def run_command(command, cwd=None):
 def install_library():
     cmake_build_command = (
         f"cmake -B _builds "
-        f"-DCMAKE_INSTALL_PREFIX=\"C:\Users\User\Developments\SharkCardGame\vendors\cbit2d\"  -G \"MinGW Makefiles\" "
+        f"-DCMAKE_INSTALL_PREFIX=\"C:\\Users\\User\\Developments\\SharkCardGame\\vendors\\cbit2d\" -G \"MinGW Makefiles\" "
         f"-DCMAKE_CXX_STANDARD=17"
     )
 
