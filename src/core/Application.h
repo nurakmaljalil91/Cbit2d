@@ -56,7 +56,7 @@ private:
     // manager
     SceneManager _sceneManager;
 
-    void _renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
+    void renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };
 
 #endif //CBIT2D_APPLICATION_H

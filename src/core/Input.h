@@ -17,25 +17,35 @@
 
 class Input {
 public:
+    // Updates the input state; should be called once per frame
     void update();
 
-    bool isKeyPressed(int key);
+    // Checks if a key was pressed this frame
+    bool isKeyPressed(int key) const;
 
-    bool isKeyReleased(int key);
+    // Checks if a key was released this frame
+    bool isKeyReleased(int key) const;
 
-    bool isKeyHeld(int key);
+    // Checks if a key is currently held down
+    bool isKeyHeld(int key) const;
 
-    bool isQuit();
+    // Checks if the quit event was triggered (e.g., by pressing the Escape key)
+    bool isQuit() const;
 
-    bool isMouseButtonPressed(int button);
+    // Checks if a mouse button was pressed this frame
+    bool isMouseButtonPressed(int button) const;
 
-    bool isMouseButtonReleased(int button);
+    // Checks if a mouse button was released this frame
+    bool isMouseButtonReleased(int button) const;
 
-    bool isMouseButtonHeld(int button);
+    // Checks if a mouse button is currently held down
+    bool isMouseButtonHeld(int button) const;
 
-    void getMousePosition(int &x, int &y);
+    // Retrieves the current mouse position
+    void getMousePosition(int &x, int &y) const;
 
-    void getMouseDelta(int &dx, int &dy);
+    // Retrieves the mouse movement delta since the last frame
+    void getMouseDelta(int &dx, int &dy) const;
 
 private:
     std::unordered_map<int, bool> _keyPressed;

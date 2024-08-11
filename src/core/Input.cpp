@@ -26,15 +26,19 @@ void Input::update() {
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
             case SDL_KEYDOWN:
-                _keyPressed[event.key.keysym.sym] = true;
+                if (!_keyHeld[event.key.keysym.scancode]) { // Prevent repeated key press events
+                    _keyPressed[event.key.keysym.sym] = true;
+                }
                 _keyHeld[event.key.keysym.scancode] = true;
                 break;
             case SDL_KEYUP:
-                _keyPressed[event.key.keysym.sym] = false;
+                _keyReleased[event.key.keysym.sym] = true;
                 _keyHeld[event.key.keysym.scancode] = false;
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                _mouseButtonPressed[event.button.button] = true;
+                if (!_mouseButtonHeld[event.button.button]) { // Prevent repeated mouse button press events
+                    _mouseButtonPressed[event.button.button] = true;
+                }
                 _mouseButtonHeld[event.button.button] = true;
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -56,40 +60,47 @@ void Input::update() {
     }
 }
 
-bool Input::isKeyPressed(int key) {
-    return _keyPressed[key];
+bool Input::isKeyPressed(int key) const {
+    auto it = _keyPressed.find(key);
+    return it != _keyPressed.end() && it->second;
 }
 
-bool Input::isKeyReleased(int key) {
-    return _keyReleased[key];
+bool Input::isKeyReleased(int key) const {
+    auto it = _keyReleased.find(key);
+    return it != _keyReleased.end() && it->second;
 }
 
-bool Input::isKeyHeld(int key) {
-    return _keyHeld[key];
+bool Input::isKeyHeld(int key) const {
+    SDL_Scancode scancode = SDL_GetScancodeFromKey(key); // Convert key to scancode
+    auto it = _keyHeld.find(scancode);
+    return it != _keyHeld.end() && it->second;
 }
 
-bool Input::isQuit() {
-    return _keyPressed[SDLK_ESCAPE];
+bool Input::isQuit() const {
+    return isKeyPressed(SDLK_ESCAPE);
 }
 
-bool Input::isMouseButtonPressed(int button) {
-    return _mouseButtonPressed[button];
+bool Input::isMouseButtonPressed(int button) const {
+    auto it = _mouseButtonPressed.find(button);
+    return it != _mouseButtonPressed.end() && it->second;
 }
 
-bool Input::isMouseButtonReleased(int button) {
-    return _mouseButtonReleased[button];
+bool Input::isMouseButtonReleased(int button) const {
+    auto it = _mouseButtonReleased.find(button);
+    return it != _mouseButtonReleased.end() && it->second;
 }
 
-bool Input::isMouseButtonHeld(int button) {
-    return _mouseButtonHeld[button];
+bool Input::isMouseButtonHeld(int button) const {
+    auto it = _mouseButtonHeld.find(button);
+    return it != _mouseButtonHeld.end() && it->second;
 }
 
-void Input::getMousePosition(int &x, int &y) {
+void Input::getMousePosition(int &x, int &y) const {
     x = _mouseX;
     y = _mouseY;
 }
 
-void Input::getMouseDelta(int& dx, int& dy) {
+void Input::getMouseDelta(int &dx, int &dy) const {
     dx = _mouseDeltaX;
     dy = _mouseDeltaY;
 }

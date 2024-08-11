@@ -27,7 +27,7 @@ void PlayScene::setup() {
 
     _player = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_player, 64, 64, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_player,"player", 45, 50);
+    _ecs.registry.emplace<ColliderComponent>(_player, "player", 45, 50);
     auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64);
     animatedSprite.addAnimation("idle", 0, 256, 1, 0.2f);
     animatedSprite.addAnimation("down", 0, 256, 3, 0.2f);
@@ -39,7 +39,7 @@ void PlayScene::setup() {
     _enemy = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(_enemy, 192, 192, 64, 64);
     _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_enemy,"enemy", 64, 64);
+    _ecs.registry.emplace<ColliderComponent>(_enemy, "enemy", 64, 64);
 
     auto crate = _ecs.registry.create();
     _ecs.registry.emplace<TransformComponent>(crate, 128, 128, 64, 64);
@@ -54,61 +54,46 @@ void PlayScene::update(float deltaTime, Input &input) {
     auto &transform = _ecs.registry.get<TransformComponent>(_player);
     auto &animatedSprite = _ecs.registry.get<AnimatedSpriteComponent>(_player);
     bool isMoving = false;
-    if (input.isKeyPressed(SDLK_w)) {
+    if (input.isKeyHeld(SDLK_w)) {
         transform.velocity.x = 0;
         transform.velocity.y = -200;
         isMoving = true;
         animatedSprite.playAnimation("up");
     }
-    if (input.isKeyPressed(SDLK_s)) {
+    if (input.isKeyHeld(SDLK_s)) {
         transform.velocity.x = 0;
         transform.velocity.y = 200;
         isMoving = true;
         animatedSprite.playAnimation("down");
     }
-    if (input.isKeyPressed(SDLK_a)) {
+    if (input.isKeyHeld(SDLK_a)) {
         transform.velocity.x = -200;
         transform.velocity.y = 0;
         isMoving = true;
         animatedSprite.playAnimation("left");
     }
-    if (input.isKeyPressed(SDLK_d)) {
+    if (input.isKeyHeld(SDLK_d)) {
         transform.velocity.x = 200;
         transform.velocity.y = 0;
         isMoving = true;
         animatedSprite.playAnimation("right");
     }
 
-//    animatedSprite.playAnimation("idle");
-
     // Update player position based on velocity
     transform.position.x += transform.velocity.x * deltaTime;
     transform.position.y += transform.velocity.y * deltaTime;
 
     auto &playerCollider = _ecs.registry.get<ColliderComponent>(_player);
-//    auto &enemyCollider = _ecs.registry.get<ColliderComponent>(_enemy);
 
     // Center the collider relative to the transform's position and size
     playerCollider.x = static_cast<int>(transform.position.x ) + (transform.width - playerCollider.width) / 2;
     playerCollider.y = static_cast<int>(transform.position.y) + (transform.height - playerCollider.height) / 2;
-//
-//    if (playerCollider.x < enemyCollider.x + enemyCollider.width &&
-//        playerCollider.x + playerCollider.width > enemyCollider.x &&
-//        playerCollider.y < enemyCollider.y + enemyCollider.height &&
-//        playerCollider.y + playerCollider.height > enemyCollider.y) {
-////        LOG_INFO("Player collided with enemy");
-//        // Resolve collision: Reset position to previous state
-//        transform.position.x -= transform.velocity.x * deltaTime;
-//        transform.position.y -= transform.velocity.y * deltaTime;
-//        transform.velocity.x = 0;
-//        transform.velocity.y = 0;
-//    }
 
     // Check for collision with walls
     auto view = _ecs.registry.view<TransformComponent, ColliderComponent>();
 
     for (auto entity: view) {
-        if(entity == _player) continue;
+        if (entity == _player) continue;
 
         auto &otherTransform = view.get<TransformComponent>(entity);
         auto &otherCollider = view.get<ColliderComponent>(entity);
@@ -119,7 +104,7 @@ void PlayScene::update(float deltaTime, Input &input) {
                 playerCollider.x + playerCollider.width > otherCollider.x &&
                 playerCollider.y < otherCollider.y + otherCollider.height &&
                 playerCollider.y + playerCollider.height > otherCollider.y) {
-                LOG_INFO("Player collided with wall");
+//                LOG_INFO("Player collided with wall");
                 // Resolve collision: Reset position to previous state
                 transform.position.x -= transform.velocity.x * deltaTime;
                 transform.position.y -= transform.velocity.y * deltaTime;
@@ -133,7 +118,7 @@ void PlayScene::update(float deltaTime, Input &input) {
     if (!isMoving) {
         transform.velocity.x = 0;
         transform.velocity.y = 0;
-//        animatedSprite.playAnimation("idle");
+        animatedSprite.playAnimation("idle");
     }
 
     if (input.isKeyPressed(SDLK_RETURN)) {

@@ -4,6 +4,10 @@
 
 ### 2024-08-10
 
+- Fixing the input class to handle key held down events.
+
+### 2024-08-10
+
 - Add clickable and draggable components
 
 ### 2024-08-09

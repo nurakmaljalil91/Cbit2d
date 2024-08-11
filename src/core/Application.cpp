@@ -130,7 +130,7 @@ void Application::run() {
 
         // Display FPS
         std::string fpsText = "FPS: " + std::to_string(_fps);
-        _renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
+        renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
 
         SDL_RenderPresent(_renderer);
 
@@ -163,8 +163,8 @@ void Application::cleanup() {
     LOG_INFO("SDL _quit");
 }
 
-void Application::_renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y,
-                                          SDL_Color color) {
+void Application::renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y,
+                                         SDL_Color color) {
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     if (surface == nullptr) {
         LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
