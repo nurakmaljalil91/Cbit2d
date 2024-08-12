@@ -86,6 +86,7 @@ add_library(Cbit2d SHARED
         src/core/TileMap.h
         src/core/GameObject.cpp
         src/core/GameObject.h
+        src/Cbit.h
 )
 
 # Create an executable
@@ -116,6 +117,7 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/TileMap.h
         src/core/GameObject.cpp
         src/core/GameObject.h
+        src/Cbit.h
 )
 
 # Link SDL2 library for the library
@@ -146,17 +148,6 @@ install(TARGETS Cbit2d
         ARCHIVE DESTINATION lib)          # for static libraries and import libraries
 
 # Install core header and source files to include/cbit2d/core
-install(FILES
-        src/core/Application.h
-        src/core/Application.cpp
-        src/core/Scene.h
-        src/core/Scene.cpp
-        src/core/SceneManager.h
-        src/core/SceneManager.cpp
-        src/core/Components.h
-        DESTINATION include/cbit2d/core)
-
-# Install core header and source files to include/cbit2d/core
 file(GLOB CORE_FILES
         "src/core/*.h"
         "src/core/*.cpp")
@@ -167,6 +158,12 @@ file(GLOB UTILITIES_FILES
         "src/utilities/*.h"
         "src/utilities/*.cpp")
 install(FILES ${UTILITIES_FILES} DESTINATION include/cbit2d/utilities)
+
+# Install src header and source files to include/cbit2d
+file(GLOB SRC_FILES
+        "src/*.h"
+        "src/*.cpp")
+install(FILES ${SRC_FILES} DESTINATION include/cbit2d)
 
 # Create and install a package configuration file
 include(CMakePackageConfigHelpers)

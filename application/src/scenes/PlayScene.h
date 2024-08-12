@@ -13,8 +13,7 @@
 #define CBIT2D_PLAYSCENE_H
 
 
-#include "../../../src/core/Scene.h"
-#include "../../../src/core/GameObject.h"
+#include "../../../src/Cbit.h"
 
 class PlayScene : public Scene {
 public:

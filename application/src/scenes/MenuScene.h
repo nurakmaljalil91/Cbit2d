@@ -13,8 +13,7 @@
 #define CBIT2D_MENUSCENE_H
 
 
-#include "../../../src/core/Scene.h"
-#include "../../../src/core/GameObject.h"
+#include "../../../src/Cbit.h"
 
 class MenuScene : public Scene {
 public:

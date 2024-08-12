@@ -11,7 +11,7 @@
  * @author Nur Akmal bin Jalil
  * @date 2024-07-20
  */
-#include "../../src/core/Application.h"
+#include "../../src/Cbit.h"
 #include "scenes/MenuScene.h"
 #include "scenes/PlayScene.h"
 //#include <simdjson.h>
