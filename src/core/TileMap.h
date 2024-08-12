@@ -18,6 +18,7 @@
 #include "../utilities/Logger.h"
 #include <entt/entt.hpp>
 #include "Components.h"
+#include "EntityComponentSystem.h"
 
 struct Tile {
     int gid;
@@ -34,7 +35,7 @@ public:
     simdjson::ondemand::document loadJSON(const std::string &filePath, simdjson::ondemand::parser &parser);
 
     void
-    loadMap(std::string textureName, std::string jsonFile, int tileWidth, int tileHeight, entt::registry &registry);
+    loadMap(std::string textureName, std::string jsonFile, int tileWidth, int tileHeight, EntityComponentSystem &ecs);
 
     void render(SDL_Renderer *renderer);
 

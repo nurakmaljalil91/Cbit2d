@@ -18,6 +18,14 @@
 #include <glm/glm.hpp>
 #include <utility>
 
+struct TagComponent {
+    std::string tag;
+};
+
+struct IdComponent {
+    std::string uuid;
+};
+
 struct TransformComponent {
     int x, y, width, height;
     int velocityX = 0;

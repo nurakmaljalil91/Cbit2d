@@ -10,6 +10,7 @@
  */
 
 #include "EntityComponentSystem.h"
+#include "GameObject.h"
 
 EntityComponentSystem::EntityComponentSystem() = default;
 
@@ -17,7 +18,7 @@ EntityComponentSystem::~EntityComponentSystem() = default;
 
 void EntityComponentSystem::update(float deltaTime, Input &input) {
     int mouseX, mouseY;
-    auto colliderView = registry.view<TransformComponent, ColliderComponent>();
+    auto colliderView = _registry.view<TransformComponent, ColliderComponent>();
     for (auto entity: colliderView) {
         auto &transform = colliderView.get<TransformComponent>(entity);
         auto &collider = colliderView.get<ColliderComponent>(entity);
@@ -25,7 +26,7 @@ void EntityComponentSystem::update(float deltaTime, Input &input) {
         collider.y = static_cast<int>(transform.position.y) + (transform.height - collider.height) / 2;
     }
 
-    auto buttonView = registry.view<TransformComponent, ButtonComponent>();
+    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
     for (auto entity: buttonView) {
         auto &button = buttonView.get<ButtonComponent>(entity);
         auto &transform = buttonView.get<TransformComponent>(entity);
@@ -52,7 +53,7 @@ void EntityComponentSystem::update(float deltaTime, Input &input) {
         }
     }
 
-    auto animatedSpriteView = registry.view<AnimatedSpriteComponent>();
+    auto animatedSpriteView = _registry.view<AnimatedSpriteComponent>();
     for (auto entity: animatedSpriteView) {
         auto &animatedSprite = animatedSpriteView.get<AnimatedSpriteComponent>(entity);
         animatedSprite.currentTime += deltaTime;
@@ -63,7 +64,7 @@ void EntityComponentSystem::update(float deltaTime, Input &input) {
         }
     }
 
-    auto draggableView = registry.view<TransformComponent, DraggableComponent>();
+    auto draggableView = _registry.view<TransformComponent, DraggableComponent>();
     for (auto entity: draggableView) {
         auto &transform = draggableView.get<TransformComponent>(entity);
         auto &draggable = draggableView.get<DraggableComponent>(entity);
@@ -96,7 +97,7 @@ void EntityComponentSystem::update(float deltaTime, Input &input) {
         }
     }
 
-    auto clickableView = registry.view<TransformComponent, ClickableComponent>();
+    auto clickableView = _registry.view<TransformComponent, ClickableComponent>();
     for (auto entity: clickableView) {
         auto &transform = clickableView.get<TransformComponent>(entity);
         auto &clickable = clickableView.get<ClickableComponent>(entity);
@@ -116,7 +117,7 @@ void EntityComponentSystem::update(float deltaTime, Input &input) {
 }
 
 void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
-    auto spriteView = registry.view<TransformComponent, SpriteComponent>();
+    auto spriteView = _registry.view<TransformComponent, SpriteComponent>();
 
     // Create a vector of entities to sort based on their layer
     std::vector<entt::entity> spriteEntities(spriteView.begin(), spriteView.end());
@@ -138,7 +139,7 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
     }
 
-    auto multipleView = registry.view<TransformComponent, MultipleSpriteComponent>();
+    auto multipleView = _registry.view<TransformComponent, MultipleSpriteComponent>();
 
     // Create a vector of entities to sort based on their layer
     std::vector<entt::entity> multipleSpriteEntities(multipleView.begin(), multipleView.end());
@@ -164,7 +165,7 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
         SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
     }
 
-    auto animatedSpriteView = registry.view<TransformComponent, AnimatedSpriteComponent>();
+    auto animatedSpriteView = _registry.view<TransformComponent, AnimatedSpriteComponent>();
 
     // Create a vector of entities to sort based on their layer
     std::vector<entt::entity> animatedSpriteEntities(animatedSpriteView.begin(), animatedSpriteView.end());
@@ -190,7 +191,7 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
 
     }
 
-    auto textView = registry.view<TransformComponent, TextComponent>();
+    auto textView = _registry.view<TransformComponent, TextComponent>();
     for (auto entity: textView) {
         auto &transform = textView.get<TransformComponent>(entity);
         auto &text = textView.get<TextComponent>(entity);
@@ -202,7 +203,7 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
                    transform.height, color);
     }
 
-    auto buttonView = registry.view<TransformComponent, ButtonComponent>();
+    auto buttonView = _registry.view<TransformComponent, ButtonComponent>();
     for (auto entity: buttonView) {
         auto &transform = buttonView.get<TransformComponent>(entity);
         auto &button = buttonView.get<ButtonComponent>(entity);
@@ -215,7 +216,7 @@ void EntityComponentSystem::render(SDL_Renderer *renderer, bool debug) {
     }
 
     if (debug) {
-        auto colliderView = registry.view<TransformComponent, ColliderComponent>();
+        auto colliderView = _registry.view<TransformComponent, ColliderComponent>();
         for (auto entity: colliderView) {
             auto &transform = colliderView.get<TransformComponent>(entity);
             auto &collider = colliderView.get<ColliderComponent>(entity);
@@ -264,7 +265,61 @@ EntityComponentSystem::renderText(SDL_Renderer *renderer, const char *text, TTF_
 }
 
 void EntityComponentSystem::cleanup() {
-    registry.clear();
+    _registry.clear();
+}
+
+GameObject EntityComponentSystem::createGameObject(const std::string &tag) {
+    GameObject entity = GameObject(_registry.create(), this);
+    entity.addComponent<TagComponent>(tag);
+    entity.addComponent<IdComponent>(generateUUID());
+    return entity;
+}
+
+void EntityComponentSystem::destroyGameObject(GameObject entity) {
+    _registry.destroy(entity.getEntity());
+}
+
+GameObject EntityComponentSystem::getGameObjectByName(const std::string &name) {
+    auto view = _registry.view<TagComponent>();
+    for (auto entity: view) {
+        auto &tag = view.get<TagComponent>(entity);
+        if (tag.tag == name) {
+            return {entity, this};
+        }
+    }
+    return {entt::null, this};
+}
+
+std::string EntityComponentSystem::generateUUID() {
+    std::random_device rd;
+    std::uniform_int_distribution<int> dist(0, 15);
+    std::uniform_int_distribution<int> dist2(8, 11);
+
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0');
+
+    for (int i = 0; i < 8; i++) {
+        ss << std::setw(1) << dist(rd);
+    }
+    ss << "-";
+    for (int i = 0; i < 4; i++) {
+        ss << std::setw(1) << dist(rd);
+    }
+    ss << "-4"; // Version 4 UUID
+    for (int i = 0; i < 3; i++) {
+        ss << std::setw(1) << dist(rd);
+    }
+    ss << "-";
+    ss << std::setw(1) << dist2(rd); // Ensure the leading bit is 10xx
+    for (int i = 0; i < 3; i++) {
+        ss << std::setw(1) << dist(rd);
+    }
+    ss << "-";
+    for (int i = 0; i < 12; i++) {
+        ss << std::setw(1) << dist(rd);
+    }
+
+    return ss.str();
 }
 
 

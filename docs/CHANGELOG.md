@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### 2024-08-12
+
+- Refactor the Entity component system to use game objects
+- Add tag component to entities
+- Add id component to entities
+
 ### 2024-08-10
 
 - Fixing the input class to handle key held down events.

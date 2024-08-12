@@ -14,6 +14,7 @@
 
 
 #include "../../../src/core/Scene.h"
+#include "../../../src/core/GameObject.h"
 
 class MenuScene : public Scene {
 public:

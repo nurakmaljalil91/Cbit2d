@@ -14,6 +14,7 @@
 
 
 #include "../../../src/core/Scene.h"
+#include "../../../src/core/GameObject.h"
 
 class PlayScene : public Scene {
 public:
@@ -26,8 +27,8 @@ public:
     void update(float deltaTime, Input &input) override;
 
 private:
-    entt::entity _player;
-    entt::entity _enemy;
+    GameObject _player;
+    GameObject _enemy;
 };
 
 

@@ -11,10 +11,8 @@
 
 #include "PlayScene.h"
 
-PlayScene::PlayScene() :
-        _player(entt::null),
-        _enemy(entt::null),
-        Scene() {}
+PlayScene::PlayScene() : Scene() {
+}
 
 PlayScene::~PlayScene() = default;
 
@@ -23,12 +21,12 @@ void PlayScene::setup() {
 //    toggleDebug();
 
     // load map
-    _tileMap.loadMap("sokoban_tilesheet", "resources/maps/basic.json", 64, 64, _ecs.registry);
+    _tileMap.loadMap("sokoban_tilesheet", "resources/maps/basic.json", 64, 64, _ecs);
 
-    _player = _ecs.registry.create();
-    _ecs.registry.emplace<TransformComponent>(_player, 64, 64, 64, 64);
-    _ecs.registry.emplace<ColliderComponent>(_player, "player", 45, 50);
-    auto &animatedSprite = _ecs.registry.emplace<AnimatedSpriteComponent>(_player, "sokoban_tilesheet", 64, 64, 1);
+    _player = _ecs.createGameObject("player");
+    _player.addComponent<TransformComponent>(64, 64, 64, 64);
+    _player.addComponent<ColliderComponent>("player", 45, 50);
+    auto &animatedSprite = _player.addComponent<AnimatedSpriteComponent>("sokoban_tilesheet", 64, 64, 1);
     animatedSprite.addAnimation("idle", 0, 256, 1, 0.2f);
     animatedSprite.addAnimation("down", 0, 256, 3, 0.2f);
     animatedSprite.addAnimation("up", 192, 256, 3, 0.2f);
@@ -36,23 +34,23 @@ void PlayScene::setup() {
     animatedSprite.addAnimation("right", 0, 384, 3, 0.2f);
     animatedSprite.playAnimation("idle");
 
-    _enemy = _ecs.registry.create();
-    _ecs.registry.emplace<TransformComponent>(_enemy, 192, 192, 64, 64);
-    _ecs.registry.emplace<SpriteComponent>(_enemy, "sokoban_tilesheet", 64, 64, 64, 64, 2);
-    _ecs.registry.emplace<ColliderComponent>(_enemy, "enemy", 64, 64);
+    _enemy = _ecs.createGameObject("enemy");
+    _enemy.addComponent<TransformComponent>(192, 192, 64, 64);
+    _enemy.addComponent<SpriteComponent>("sokoban_tilesheet", 64, 64, 64, 64, 2);
+    _enemy.addComponent<ColliderComponent>("enemy", 64, 64);
 
-    auto crate = _ecs.registry.create();
-    _ecs.registry.emplace<TransformComponent>(crate, 128, 128, 64, 64);
-    _ecs.registry.emplace<SpriteComponent>(crate, "sokoban_tilesheet", 64, 64, 64, 64, 3);
-    _ecs.registry.emplace<DraggableComponent>(crate);
+    auto crate = _ecs.createGameObject("crate");
+    crate.addComponent<TransformComponent>(128, 128, 64, 64);
+    crate.addComponent<SpriteComponent>("sokoban_tilesheet", 64, 64, 64, 64, 3);
+    crate.addComponent<DraggableComponent>();
 }
 
 void PlayScene::update(float deltaTime, Input &input) {
     Scene::update(deltaTime, input);
 
     // handle input for the player movement
-    auto &transform = _ecs.registry.get<TransformComponent>(_player);
-    auto &animatedSprite = _ecs.registry.get<AnimatedSpriteComponent>(_player);
+    auto &transform = _player.getComponent<TransformComponent>();
+    auto &animatedSprite = _player.getComponent<AnimatedSpriteComponent>();
     bool isMoving = false;
     if (input.isKeyHeld(SDLK_w)) {
         transform.velocity.x = 0;
@@ -83,17 +81,17 @@ void PlayScene::update(float deltaTime, Input &input) {
     transform.position.x += transform.velocity.x * deltaTime;
     transform.position.y += transform.velocity.y * deltaTime;
 
-    auto &playerCollider = _ecs.registry.get<ColliderComponent>(_player);
+    auto &playerCollider = _player.getComponent<ColliderComponent>();
 
     // Center the collider relative to the transform's position and size
     playerCollider.x = static_cast<int>(transform.position.x ) + (transform.width - playerCollider.width) / 2;
     playerCollider.y = static_cast<int>(transform.position.y) + (transform.height - playerCollider.height) / 2;
 
     // Check for collision with walls
-    auto view = _ecs.registry.view<TransformComponent, ColliderComponent>();
+    auto view = _ecs.getAllEntitiesWith<TransformComponent, ColliderComponent>();
 
     for (auto entity: view) {
-        if (entity == _player) continue;
+        if (entity == _player.getEntity()) continue;
 
         auto &otherTransform = view.get<TransformComponent>(entity);
         auto &otherCollider = view.get<ColliderComponent>(entity);

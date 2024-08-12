@@ -84,6 +84,8 @@ add_library(Cbit2d SHARED
         src/core/EntityComponentSystem.h
         src/core/TileMap.cpp
         src/core/TileMap.h
+        src/core/GameObject.cpp
+        src/core/GameObject.h
 )
 
 # Create an executable
@@ -112,6 +114,8 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/EntityComponentSystem.h
         src/core/TileMap.cpp
         src/core/TileMap.h
+        src/core/GameObject.cpp
+        src/core/GameObject.h
 )
 
 # Link SDL2 library for the library

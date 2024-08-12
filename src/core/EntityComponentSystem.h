@@ -15,10 +15,16 @@
 #include <entt/entt.hpp>
 #include <SDL2/SDL.h>
 #include <vector>
+#include <iostream>
+#include <random>
+#include <iomanip>
+#include <sstream>
 #include "Input.h"
 #include "Components.h"
 #include "AssetManager.h"
 #include "../utilities/Logger.h"
+
+class GameObject;
 
 class EntityComponentSystem {
 public:
@@ -32,13 +38,29 @@ public:
 
     void cleanup();
 
-    entt::registry registry;
+    GameObject createGameObject(const std::string &tag);
 
-    static void renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
-                    SDL_Color color);
+    void destroyGameObject(GameObject entity);
+
+    GameObject getGameObjectByName(const std::string &name);
+
+    template<typename... Components>
+    auto getAllEntitiesWith() {
+        return _registry.view<Components...>();
+    }
+
+private:
+    entt::registry _registry;
+
+    friend class GameObject;
+
+    std::string generateUUID();
+
+    static void
+    renderText(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, int width, int height,
+               SDL_Color color);
+
 };
-
-
 
 
 #endif //CBIT2D_ENTITYCOMPONENTSYSTEM_H

@@ -3,6 +3,7 @@
 //
 
 #include "TileMap.h"
+#include "GameObject.h"
 
 TileMap::TileMap() = default;
 
@@ -17,7 +18,8 @@ simdjson::ondemand::document TileMap::loadJSON(const std::string &filePath, simd
     return parser.iterate(json);
 }
 
-void TileMap::loadMap(std::string textureName, std::string jsonFile, int tileWidth, int tileHeight, entt::registry &registry) {
+void TileMap::loadMap(std::string textureName, std::string jsonFile, int tileWidth, int tileHeight,
+                      EntityComponentSystem &ecs) {
     _tileSetTexture = AssetManager::getInstance().loadTexture(textureName);
 
     try {
@@ -55,11 +57,12 @@ void TileMap::loadMap(std::string textureName, std::string jsonFile, int tileWid
                                 tileWidth, tileHeight};
                         _tiles.push_back(newTile);
 
-                        if(name == "Wall") {
+                        if (name == "Wall") {
 //                            LOG_INFO("Wall at x: {}, y: {}", newTile.destRect.x, newTile.destRect.y);
-                            auto entity = registry.create();
-                            registry.emplace<TransformComponent>(entity, newTile.destRect.x, newTile.destRect.y, newTile.destRect.w, newTile.destRect.h);
-                            registry.emplace<ColliderComponent>(entity,"wall", newTile.destRect.w, newTile.destRect.h);
+                            auto wall = ecs.createGameObject("wall" + std::to_string(index));
+                            wall.addComponent<TransformComponent>(newTile.destRect.x, newTile.destRect.y,
+                                                                  newTile.destRect.w, newTile.destRect.h);
+                            wall.addComponent<ColliderComponent>("wall", newTile.destRect.w, newTile.destRect.h);
                         }
                     }
                     index++;
