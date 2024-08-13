@@ -12,52 +12,41 @@
 
 #include "Input.h"
 
-void Input::update() {
-    _keyPressed.clear();
-    _keyReleased.clear();
-
-    _mouseButtonPressed.clear();
-    _mouseButtonReleased.clear();
-
-    _prevMouseX = _mouseX;
-    _prevMouseY = _mouseY;
-
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_KEYDOWN:
-                if (!_keyHeld[event.key.keysym.scancode]) { // Prevent repeated key press events
-                    _keyPressed[event.key.keysym.sym] = true;
-                }
-                _keyHeld[event.key.keysym.scancode] = true;
-                break;
-            case SDL_KEYUP:
-                _keyReleased[event.key.keysym.sym] = true;
-                _keyHeld[event.key.keysym.scancode] = false;
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (!_mouseButtonHeld[event.button.button]) { // Prevent repeated mouse button press events
-                    _mouseButtonPressed[event.button.button] = true;
-                }
-                _mouseButtonHeld[event.button.button] = true;
-                break;
-            case SDL_MOUSEBUTTONUP:
-                _mouseButtonReleased[event.button.button] = true;
-                _mouseButtonHeld[event.button.button] = false;
-                break;
-            case SDL_MOUSEMOTION:
-                _mouseX = event.motion.x;
-                _mouseY = event.motion.y;
-                _mouseDeltaX = _mouseX - _prevMouseX;
-                _mouseDeltaY = _mouseY - _prevMouseY;
-                break;
-            case SDL_QUIT:
-                _keyPressed[SDLK_ESCAPE] = true;
-                break;
-            default:
-                break;
-        }
+void Input::update(SDL_Event &event) {
+    switch (event.type) {
+        case SDL_KEYDOWN:
+            if (!_keyHeld[event.key.keysym.scancode]) { // Prevent repeated key press events
+                _keyPressed[event.key.keysym.sym] = true;
+            }
+            _keyHeld[event.key.keysym.scancode] = true;
+            break;
+        case SDL_KEYUP:
+            _keyReleased[event.key.keysym.sym] = true;
+            _keyHeld[event.key.keysym.scancode] = false;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if (!_mouseButtonHeld[event.button.button]) { // Prevent repeated mouse button press events
+                _mouseButtonPressed[event.button.button] = true;
+            }
+            _mouseButtonHeld[event.button.button] = true;
+            break;
+        case SDL_MOUSEBUTTONUP:
+            _mouseButtonReleased[event.button.button] = true;
+            _mouseButtonHeld[event.button.button] = false;
+            break;
+        case SDL_MOUSEMOTION:
+            _mouseX = event.motion.x;
+            _mouseY = event.motion.y;
+            _mouseDeltaX = _mouseX - _prevMouseX;
+            _mouseDeltaY = _mouseY - _prevMouseY;
+            break;
+        case SDL_QUIT:
+            _keyPressed[SDLK_ESCAPE] = true;
+            break;
+        default:
+            break;
     }
+
 }
 
 bool Input::isKeyPressed(int key) const {
@@ -103,4 +92,15 @@ void Input::getMousePosition(int &x, int &y) const {
 void Input::getMouseDelta(int &dx, int &dy) const {
     dx = _mouseDeltaX;
     dy = _mouseDeltaY;
+}
+
+void Input::clear() {
+    _keyPressed.clear();
+    _keyReleased.clear();
+
+    _mouseButtonPressed.clear();
+    _mouseButtonReleased.clear();
+
+    _prevMouseX = _mouseX;
+    _prevMouseY = _mouseY;
 }

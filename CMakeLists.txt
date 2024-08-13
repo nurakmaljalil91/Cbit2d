@@ -58,6 +58,19 @@ set(SIMDJSON_PATH vendors/simdjson)
 include_directories(${SIMDJSON_PATH}/include)
 link_directories(${SIMDJSON_PATH}/lib)
 
+# set imgui path
+set(IMGUI_PATH vendors/imgui)
+include_directories(${IMGUI_PATH})
+set(IMGUI_FILES
+        ${IMGUI_PATH}/imgui.cpp
+        ${IMGUI_PATH}/imgui_demo.cpp
+        ${IMGUI_PATH}/imgui_draw.cpp
+        ${IMGUI_PATH}/imgui_tables.cpp
+        ${IMGUI_PATH}/imgui_widgets.cpp
+        ${IMGUI_PATH}/backends/imgui_impl_sdl2.cpp
+        ${IMGUI_PATH}/backends/imgui_impl_sdlrenderer2.cpp
+)
+
 # Copy all files in the resources folder
 file(GLOB RESOURCES_FILES ${CMAKE_SOURCE_DIR}/application/resources/*)
 file(COPY ${RESOURCES_FILES} DESTINATION ${CMAKE_BINARY_DIR}/resources)
@@ -87,7 +100,12 @@ add_library(Cbit2d SHARED
         src/core/GameObject.cpp
         src/core/GameObject.h
         src/Cbit.h
+        src/editor/Editor.cpp
+        src/editor/Editor.h
 )
+
+# Add ImGui files to the shared library
+target_sources(Cbit2d PRIVATE ${IMGUI_FILES})
 
 # Create an executable
 add_executable(Cbit2dApp application/src/main.cpp
@@ -118,7 +136,12 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/GameObject.cpp
         src/core/GameObject.h
         src/Cbit.h
+        src/editor/Editor.cpp
+        src/editor/Editor.h
 )
+
+# Add ImGui files to the executable (if needed separately)
+target_sources(Cbit2dApp PRIVATE ${IMGUI_FILES})
 
 # Link SDL2 library for the library
 target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image SDL2_ttf SDL2_mixer simdjson spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)

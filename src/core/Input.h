@@ -18,7 +18,7 @@
 class Input {
 public:
     // Updates the input state; should be called once per frame
-    void update();
+    void update(SDL_Event &event);
 
     // Checks if a key was pressed this frame
     bool isKeyPressed(int key) const;
@@ -46,6 +46,8 @@ public:
 
     // Retrieves the mouse movement delta since the last frame
     void getMouseDelta(int &dx, int &dy) const;
+
+    void clear();
 
 private:
     std::unordered_map<int, bool> _keyPressed;

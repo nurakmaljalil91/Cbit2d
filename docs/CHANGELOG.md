@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2024-08-13
+
+- Add editor using ImGui
+
 ### 2024-08-12
 
 - Refactor the Entity component system to use game objects
