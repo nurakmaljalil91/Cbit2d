@@ -88,7 +88,9 @@ bool Application::init() {
 
     AssetManager::getInstance().init(_renderer);
 #ifdef ENABLE_EDITOR
-    _editor.setup(_window, _renderer);
+    if (_showEditor) {
+        _editor.setup(_window, _renderer);
+    }
 #endif
 
     return true;
@@ -106,12 +108,16 @@ void Application::run() {
         while (SDL_PollEvent(&event)) {
             _input.update(event);
 #ifdef ENABLE_EDITOR
-            _editor.handleInput(event);
+            if (_showEditor) {
+                _editor.handleInput(event);
+            }
 #endif
         }
 
 #ifdef ENABLE_EDITOR
-        _editor.update(deltaTime);
+        if (_showEditor) {
+            _editor.update(deltaTime);
+        }
 #endif
         if (_input.isQuit() || _input.isKeyPressed(SDLK_ESCAPE)) {
             _isQuit = true;
@@ -142,11 +148,15 @@ void Application::run() {
         _sceneManager.render(_renderer);
 
 #ifdef ENABLE_EDITOR
-        _editor.render(_renderer);
+        if (_showEditor) {
+            _editor.render(_renderer);
+        }
 #endif
         // Display FPS
-        std::string fpsText = "FPS: " + std::to_string(_fps);
-        renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
+        if (_showFPS) {
+            std::string fpsText = "FPS: " + std::to_string(_fps);
+            renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
+        }
 
         SDL_RenderPresent(_renderer);
 
@@ -164,7 +174,9 @@ void Application::cleanup() {
     AssetManager::getInstance().cleanup();
 
 #ifdef ENABLE_EDITOR
-    _editor.cleanup();
+    if (_showEditor) {
+        _editor.cleanup();
+    }
 #endif
 
     if (_renderer != nullptr) {
@@ -214,5 +226,13 @@ void Application::toggleFullscreen() {
     bool isFullscreen = SDL_GetWindowFlags(_window) & fullscreenFlag;
     SDL_SetWindowFullscreen(_window, isFullscreen ? 0 : fullscreenFlag);
 //    SDL_ShowCursor(isFullscreen);
+}
+
+void Application::showFps() {
+    _showFPS = true;
+}
+
+void Application::showEditor() {
+    _showEditor = true;
 }
 

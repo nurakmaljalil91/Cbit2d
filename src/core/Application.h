@@ -20,7 +20,9 @@
 #include "Input.h"
 
 #ifdef ENABLE_EDITOR
+
 #include "../editor/Editor.h"
+
 #endif
 
 struct WindowConfig {
@@ -44,6 +46,10 @@ public:
 
     SceneManager &getSceneManager();
 
+    void showFps();
+
+    void showEditor();
+
 private:
     WindowConfig _windowConfig;
     SDL_Window *_window;
@@ -62,6 +68,7 @@ private:
     Uint32 _frameCount = 0;
     Uint32 _lastFPSTime = 0;
     Uint32 _fps = 0;
+    bool _showFPS = false;
 
     // manager
     SceneManager _sceneManager;
@@ -70,6 +77,8 @@ private:
 #ifdef ENABLE_EDITOR
     Editor _editor;
 #endif
+    bool _showEditor = false;
+
     static void
     renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };

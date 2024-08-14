@@ -5,6 +5,7 @@
 ### 2024-08-14
 
 - Make editor only show when in debug mode
+- Add flag for editor to show/hide and fps to show/hide
 
 ### 2024-08-13
 
