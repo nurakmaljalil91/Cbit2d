@@ -18,7 +18,10 @@
 #include <SDL2/SDL_mixer.h>
 #include "SceneManager.h"
 #include "Input.h"
+
+#ifdef ENABLE_EDITOR
 #include "../editor/Editor.h"
+#endif
 
 struct WindowConfig {
     const char *title;
@@ -64,8 +67,9 @@ private:
     SceneManager _sceneManager;
 
     // editor
+#ifdef ENABLE_EDITOR
     Editor _editor;
-
+#endif
     static void
     renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);
 };

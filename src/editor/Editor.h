@@ -6,6 +6,8 @@
  * @author Nur Akmal bin Jalil
  * @date 2024-08-13
  */
+#ifdef ENABLE_EDITOR
+
 #ifndef CBIT2D_EDITOR_H
 #define CBIT2D_EDITOR_H
 
@@ -41,5 +43,6 @@ private:
     bool _editorActive = false;
 };
 
-
 #endif //CBIT2D_EDITOR_H
+
+#endif // ENABLE_EDITOR

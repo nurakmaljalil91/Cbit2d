@@ -87,8 +87,9 @@ bool Application::init() {
     }
 
     AssetManager::getInstance().init(_renderer);
-
+#ifdef ENABLE_EDITOR
     _editor.setup(_window, _renderer);
+#endif
 
     return true;
 }
@@ -104,10 +105,14 @@ void Application::run() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             _input.update(event);
+#ifdef ENABLE_EDITOR
             _editor.handleInput(event);
+#endif
         }
 
+#ifdef ENABLE_EDITOR
         _editor.update(deltaTime);
+#endif
         if (_input.isQuit() || _input.isKeyPressed(SDLK_ESCAPE)) {
             _isQuit = true;
         }
@@ -136,8 +141,9 @@ void Application::run() {
 
         _sceneManager.render(_renderer);
 
+#ifdef ENABLE_EDITOR
         _editor.render(_renderer);
-
+#endif
         // Display FPS
         std::string fpsText = "FPS: " + std::to_string(_fps);
         renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
@@ -156,7 +162,10 @@ void Application::run() {
 void Application::cleanup() {
     _sceneManager.cleanup();
     AssetManager::getInstance().cleanup();
+
+#ifdef ENABLE_EDITOR
     _editor.cleanup();
+#endif
 
     if (_renderer != nullptr) {
         SDL_DestroyRenderer(_renderer);

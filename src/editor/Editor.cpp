@@ -1,8 +1,17 @@
-//
-// Created by User on 13/8/2024.
-//
-
+/**
+ * @file Editor.cpp
+ * @brief Implementation file for the Editor class.
+ *
+ * This file contains the implementation of the Editor class which is responsible for managing the editor in the game.
+ * The Editor class is responsible for managing the editor in the game.
+ *
+ * @author Nur Akmal bin Jalil
+ * @date 2024-08-13
+ */
 #include "Editor.h"
+
+#ifdef ENABLE_EDITOR
+
 
 Editor::Editor() {
 
@@ -93,3 +102,5 @@ void Editor::toggleEditor() {
 bool Editor::isEditorActive() const {
     return _editorActive;
 }
+
+#endif // ENABLE_EDITOR

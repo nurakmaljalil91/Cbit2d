@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2024-08-14
+
+- Make editor only show when in debug mode
+
 ### 2024-08-13
 
 - Add editor using ImGui

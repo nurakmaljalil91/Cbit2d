@@ -104,9 +104,6 @@ add_library(Cbit2d SHARED
         src/editor/Editor.h
 )
 
-# Add ImGui files to the shared library
-target_sources(Cbit2d PRIVATE ${IMGUI_FILES})
-
 # Create an executable
 add_executable(Cbit2dApp application/src/main.cpp
         src/core/Application.cpp
@@ -140,8 +137,17 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/editor/Editor.h
 )
 
-# Add ImGui files to the executable (if needed separately)
-target_sources(Cbit2dApp PRIVATE ${IMGUI_FILES})
+# Add the ENABLE_EDITOR definition for debug builds
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DENABLE_EDITOR)
+endif ()
+
+# Add ImGui files conditionally
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_sources(Cbit2d PRIVATE ${IMGUI_FILES})
+    target_sources(Cbit2dApp PRIVATE ${IMGUI_FILES})
+endif ()
+
 
 # Link SDL2 library for the library
 target_link_libraries(Cbit2d PRIVATE mingw32 SDL2::SDL2main SDL2::SDL2 SDL2_image SDL2_ttf SDL2_mixer simdjson spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
