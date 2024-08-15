@@ -21,7 +21,7 @@
 
 #ifdef ENABLE_EDITOR
 
-#include "../editor/Editor.h"
+#include "../editor/DebugMode.h"
 
 #endif
 
@@ -48,7 +48,7 @@ public:
 
     void showFps();
 
-    void showEditor();
+    void showDebugMode();
 
 private:
     WindowConfig _windowConfig;
@@ -75,9 +75,9 @@ private:
 
     // editor
 #ifdef ENABLE_EDITOR
-    Editor _editor;
+    DebugMode _debugMode;
 #endif
-    bool _showEditor = false;
+    bool _showDebugMode = false;
 
     static void
     renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y, SDL_Color color);

@@ -85,7 +85,7 @@ std::string Scene::getNextScene() {
     return _nextScene;
 }
 
-void Scene::toggleDebug() {
+void Scene::toggleDebugMode() {
     _isDebug = !_isDebug;
 }
 
@@ -106,5 +106,9 @@ void Scene::stopBGM() {
 void Scene::playSFX(const std::string &name) {
     Mix_Chunk *sfx = AssetManager::getInstance().loadSound(name);
     Mix_PlayChannel(-1, sfx, 0);
+}
+
+EntityComponentSystem &Scene::getECS() {
+    return _ecs;
 }
 

@@ -8,20 +8,20 @@
  * @author Nur Akmal bin Jalil
  * @date 2024-08-13
  */
-#include "Editor.h"
+#include "DebugMode.h"
 
 #ifdef ENABLE_EDITOR
 
 
-Editor::Editor() {
+DebugMode::DebugMode() {
 
 }
 
-Editor::~Editor() {
+DebugMode::~DebugMode() {
 
 }
 
-void Editor::setup(SDL_Window *window, SDL_Renderer *renderer) {
+void DebugMode::setup(SDL_Window *window, SDL_Renderer *renderer) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -34,11 +34,11 @@ void Editor::setup(SDL_Window *window, SDL_Renderer *renderer) {
 }
 
 
-void Editor::handleInput(SDL_Event &event) {
+void DebugMode::handleInput(SDL_Event &event) {
     ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
-void Editor::update(float deltaTime) {
+void DebugMode::update(float deltaTime, SceneManager &sceneManager) {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
@@ -48,7 +48,7 @@ void Editor::update(float deltaTime) {
     }
 
     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-    {
+    if (_showSimpleWindow) {
         static float f = 0.0f;
         static int counter = 0;
 
@@ -69,6 +69,11 @@ void Editor::update(float deltaTime) {
         ImGui::Text("counter = %d", counter);
         ImGuiIO &io = ImGui::GetIO();
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+        // Add a button to toggle debug mode
+        if (ImGui::Button("Toggle Debug Mode")) {
+            sceneManager.getActiveScene().toggleDebugMode();
+        }
         ImGui::End();
     }
 
@@ -81,26 +86,50 @@ void Editor::update(float deltaTime) {
         ImGui::End();
     }
 
+    renderEntitiesPanel(sceneManager);
+
     ImGui::Render();
 }
 
-void Editor::render(SDL_Renderer *renderer) {
+void DebugMode::render(SDL_Renderer *renderer) {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 }
 
-void Editor::cleanup() {
+void DebugMode::cleanup() {
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
 }
 
+void DebugMode::renderEntitiesPanel(SceneManager &sceneManager) {
+    auto &scenes = sceneManager.getActiveScene();
 
-void Editor::toggleEditor() {
-    _editorActive = !_editorActive;
-}
+    auto &ecs = scenes.getECS();
 
-bool Editor::isEditorActive() const {
-    return _editorActive;
+    ImGui::Begin("Game Objects");
+
+    auto view = ecs.getAllEntitiesWith<TransformComponent, TagComponent, IdComponent>();
+
+    for (auto entity: view) {
+        auto &tag = view.get<TagComponent>(entity);
+        auto &id = view.get<IdComponent>(entity);
+        auto &transform = view.get<TransformComponent>(entity);
+
+        // Display the entity's tag
+        if (ImGui::TreeNode(tag.tag.c_str())) {
+
+            // Display the entity's ID
+            ImGui::Text("ID: %d", id.uuid.data());
+
+            // Display and modify the position
+            ImGui::Text("Position:");
+            ImGui::DragFloat("X", &transform.position.x, 1.0f);
+            ImGui::DragFloat("Y", &transform.position.y, 1.0f);
+
+            ImGui::TreePop();
+        }
+    }
+    ImGui::End();
 }
 
 #endif // ENABLE_EDITOR

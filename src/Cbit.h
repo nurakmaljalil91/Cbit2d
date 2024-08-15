@@ -27,6 +27,6 @@
 #include "utilities/LocalMachine.h"
 #include "utilities/Logger.h"
 
-#include "editor/Editor.h"
+#include "editor/DebugMode.h"
 
 #endif //CBIT2D_CBIT_H

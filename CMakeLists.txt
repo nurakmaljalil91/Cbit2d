@@ -100,8 +100,8 @@ add_library(Cbit2d SHARED
         src/core/GameObject.cpp
         src/core/GameObject.h
         src/Cbit.h
-        src/editor/Editor.cpp
-        src/editor/Editor.h
+        src/editor/DebugMode.cpp
+        src/editor/DebugMode.h
 )
 
 # Create an executable
@@ -133,8 +133,8 @@ add_executable(Cbit2dApp application/src/main.cpp
         src/core/GameObject.cpp
         src/core/GameObject.h
         src/Cbit.h
-        src/editor/Editor.cpp
-        src/editor/Editor.h
+        src/editor/DebugMode.cpp
+        src/editor/DebugMode.h
 )
 
 # Add the ENABLE_EDITOR definition for debug builds
@@ -147,6 +147,22 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_sources(Cbit2d PRIVATE ${IMGUI_FILES})
     target_sources(Cbit2dApp PRIVATE ${IMGUI_FILES})
 endif ()
+
+# Add the ENABLE_EDITOR definition if specified
+option(ENABLE_EDITOR "Enable the editor functionality" OFF)
+
+if (ENABLE_EDITOR)
+    add_definitions(-DENABLE_EDITOR)
+    message(STATUS "Editor is enabled.")
+else()
+    message(STATUS "Editor is disabled.")
+endif()
+
+# Add ImGui files conditionally
+if (ENABLE_EDITOR)
+    target_sources(Cbit2d PRIVATE ${IMGUI_FILES})
+    target_sources(Cbit2dApp PRIVATE ${IMGUI_FILES})
+endif()
 
 
 # Link SDL2 library for the library
@@ -187,6 +203,12 @@ file(GLOB UTILITIES_FILES
         "src/utilities/*.h"
         "src/utilities/*.cpp")
 install(FILES ${UTILITIES_FILES} DESTINATION include/cbit2d/utilities)
+
+# Install editor header and source files to include/cbit2d/editor
+file(GLOB EDITOR_FILES
+        "src/editor/*.h"
+        "src/editor/*.cpp")
+install(FILES ${EDITOR_FILES} DESTINATION include/cbit2d/editor)
 
 # Install src header and source files to include/cbit2d
 file(GLOB SRC_FILES

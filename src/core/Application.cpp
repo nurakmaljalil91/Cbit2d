@@ -88,8 +88,8 @@ bool Application::init() {
 
     AssetManager::getInstance().init(_renderer);
 #ifdef ENABLE_EDITOR
-    if (_showEditor) {
-        _editor.setup(_window, _renderer);
+    if (_showDebugMode) {
+        _debugMode.setup(_window, _renderer);
     }
 #endif
 
@@ -108,15 +108,15 @@ void Application::run() {
         while (SDL_PollEvent(&event)) {
             _input.update(event);
 #ifdef ENABLE_EDITOR
-            if (_showEditor) {
-                _editor.handleInput(event);
+            if (_showDebugMode) {
+                _debugMode.handleInput(event);
             }
 #endif
         }
 
 #ifdef ENABLE_EDITOR
-        if (_showEditor) {
-            _editor.update(deltaTime);
+        if (_showDebugMode) {
+            _debugMode.update(deltaTime, _sceneManager);
         }
 #endif
         if (_input.isQuit() || _input.isKeyPressed(SDLK_ESCAPE)) {
@@ -148,8 +148,8 @@ void Application::run() {
         _sceneManager.render(_renderer);
 
 #ifdef ENABLE_EDITOR
-        if (_showEditor) {
-            _editor.render(_renderer);
+        if (_showDebugMode) {
+            _debugMode.render(_renderer);
         }
 #endif
         // Display FPS
@@ -174,8 +174,8 @@ void Application::cleanup() {
     AssetManager::getInstance().cleanup();
 
 #ifdef ENABLE_EDITOR
-    if (_showEditor) {
-        _editor.cleanup();
+    if (_showDebugMode) {
+        _debugMode.cleanup();
     }
 #endif
 
@@ -232,7 +232,7 @@ void Application::showFps() {
     _showFPS = true;
 }
 
-void Application::showEditor() {
-    _showEditor = true;
+void Application::showDebugMode() {
+    _showDebugMode = true;
 }
 

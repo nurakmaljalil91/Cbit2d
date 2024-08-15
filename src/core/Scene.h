@@ -46,6 +46,10 @@ public:
 
     std::string getNextScene();
 
+    EntityComponentSystem &getECS();
+
+    void toggleDebugMode();
+
 protected:
     EntityComponentSystem _ecs;
 
@@ -55,8 +59,6 @@ protected:
 
     // debugging
     bool _isDebug = false;
-
-    void toggleDebug();
 
     // background color
     Color _backgroundColor = {0, 0, 0, 255};

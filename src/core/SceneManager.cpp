@@ -54,4 +54,8 @@ void SceneManager::setActiveScene(const std::string &name) {
     }
 }
 
+Scene &SceneManager::getActiveScene() {
+    return *_currentScene;  // dereference the shared pointer
+}
+
 

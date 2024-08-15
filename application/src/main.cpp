@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
     Application app("CBit 2D Application", WINDOW_WIDTH, WINDOW_HEIGHT, false);
 
-    app.showEditor();
+    app.showDebugMode();
     app.showFps();
 
     if (!app.init()) {
