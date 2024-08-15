@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2024-08-15
+
+- Add a scene hierarchy panel in the editor
+
 ### 2024-08-14
 
 - Make editor only show when in debug mode

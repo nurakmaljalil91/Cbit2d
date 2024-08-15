@@ -88,6 +88,8 @@ void DebugMode::update(float deltaTime, SceneManager &sceneManager) {
 
     renderEntitiesPanel(sceneManager);
 
+    renderScenesPanel(sceneManager);
+
     ImGui::Render();
 }
 
@@ -129,6 +131,29 @@ void DebugMode::renderEntitiesPanel(SceneManager &sceneManager) {
             ImGui::TreePop();
         }
     }
+    ImGui::End();
+}
+
+void DebugMode::renderScenesPanel(SceneManager &sceneManager) {
+    ImGui::Begin("Scenes");
+
+    // Retrieve the list of scenes from the SceneManager
+    const auto &scenes = sceneManager.getScenes();
+
+    // Iterate through the list of scenes
+    for (const auto &scene: scenes) {
+        // Display the scene's name
+        if (ImGui::TreeNode(scene.first.c_str())) {
+            // Add a button to switch to the scene
+            if (ImGui::Button("Switch to Scene")) {
+                sceneManager.setActiveScene(scene.first);
+            }
+            // toggle debug mode
+            ImGui::Checkbox("Toggle Debug Mode", &scene.second->isDebug);
+            ImGui::TreePop();
+        }
+    }
+
     ImGui::End();
 }
 

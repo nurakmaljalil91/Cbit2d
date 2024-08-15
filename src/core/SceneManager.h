@@ -25,7 +25,7 @@ public:
 
     ~SceneManager();
 
-    void update(float deltaTime, Input& input);
+    void update(float deltaTime, Input &input);
 
     void render(SDL_Renderer *renderer);
 
@@ -35,7 +35,9 @@ public:
 
     void setActiveScene(const std::string &name);
 
-    Scene& getActiveScene();
+    Scene &getActiveScene();
+
+    const std::unordered_map<std::string, std::shared_ptr<Scene>> &getScenes() const { return _scenes; }
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Scene>> _scenes;

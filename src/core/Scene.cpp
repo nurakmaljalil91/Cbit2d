@@ -23,7 +23,7 @@ void Scene::setup() {
 void Scene::update(float deltaTime, Input &input) {
     // if debug mode is on, log the coordinates of the mouse when clicked
     int mouseX, mouseY;
-    if (_isDebug && input.isMouseButtonPressed(SDL_MOUSEBUTTONDOWN)) {
+    if (isDebug && input.isMouseButtonPressed(SDL_MOUSEBUTTONDOWN)) {
 
         SDL_GetMouseState(&mouseX, &mouseY);
         LOG_INFO("Mouse clicked at ({}, {})", mouseX, mouseY);
@@ -44,7 +44,7 @@ void Scene::render(SDL_Renderer *renderer) {
     _tileMap.render(renderer);
 
     // Render debug grid if _isDebug is true
-    if (_isDebug) {
+    if (isDebug) {
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color for grid lines
         int gridSize = 64;
 
@@ -63,7 +63,7 @@ void Scene::render(SDL_Renderer *renderer) {
         }
     }
 
-    _ecs.render(renderer, _isDebug);
+    _ecs.render(renderer, isDebug);
 }
 
 void Scene::cleanup() {
@@ -86,7 +86,7 @@ std::string Scene::getNextScene() {
 }
 
 void Scene::toggleDebugMode() {
-    _isDebug = !_isDebug;
+    isDebug = !isDebug;
 }
 
 void Scene::setBackgroundColour(Color color) {

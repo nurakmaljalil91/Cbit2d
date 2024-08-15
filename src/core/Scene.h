@@ -50,15 +50,15 @@ public:
 
     void toggleDebugMode();
 
+    // debugging
+    bool isDebug = false;
+
 protected:
     EntityComponentSystem _ecs;
 
     // manage scene
     bool _isChangeScene = false;
     std::string _nextScene;
-
-    // debugging
-    bool _isDebug = false;
 
     // background color
     Color _backgroundColor = {0, 0, 0, 255};
