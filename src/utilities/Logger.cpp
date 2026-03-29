@@ -14,12 +14,19 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <filesystem>
 #include <iostream>
 
 std::shared_ptr<spdlog::logger> Logger::logger = nullptr;
 
 void Logger::init() {
+    if (logger != nullptr) {
+        return;
+    }
+
     try {
+        std::filesystem::create_directories("logs");
+
         // Create a console logger
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         console_sink->set_level(spdlog::level::info);

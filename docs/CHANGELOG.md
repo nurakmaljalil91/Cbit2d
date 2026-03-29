@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### 2026-03-29
+
+- Copy MinGW runtime DLLs into the build directory so `cmake-build-debug/Cbit2dApp.exe` can run directly outside CLion.
+- Fix startup logging order so the application initializes the logger before the first `LOG_INFO` call.
+- Make logger initialization create the `logs` directory and safely no-op on repeated initialization.
+
 ### 2024-08-15
 
 - Add a scene hierarchy panel in the editor

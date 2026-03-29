@@ -20,6 +20,7 @@
 #define WINDOW_HEIGHT 640
 
 int main(int argc, char *argv[]) {
+    Logger::init();
 
     LOG_INFO("CBit 2D Application started");
     Application app("CBit 2D Application", WINDOW_WIDTH, WINDOW_HEIGHT, false);

@@ -1,5 +1,5 @@
 /**
- * @file Editor.cpp
+ * @file DebugMode.cpp
  * @brief Implementation file for the Editor class.
  *
  * This file contains the implementation of the Editor class which is responsible for managing the editor in the game.
@@ -13,13 +13,9 @@
 #ifdef ENABLE_EDITOR
 
 
-DebugMode::DebugMode() {
+DebugMode::DebugMode() = default;
 
-}
-
-DebugMode::~DebugMode() {
-
-}
+DebugMode::~DebugMode() = default;
 
 void DebugMode::setup(SDL_Window *window, SDL_Renderer *renderer) {
     IMGUI_CHECKVERSION();

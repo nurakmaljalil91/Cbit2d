@@ -1,5 +1,5 @@
 /**
- * @file Editor.h
+ * @file DebugMode.h
  * @brief Header file for the Editor class.
  * This file contains the declaration of the Editor class which is responsible for managing the editor in the game.
  *

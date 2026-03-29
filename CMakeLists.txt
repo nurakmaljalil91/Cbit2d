@@ -24,6 +24,16 @@ include_directories(${SDL2_PATH}/include)
 link_directories(${SDL2_PATH}/lib)
 file(COPY ${SDL2_PATH}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
 
+# Copy MinGW runtime DLLs for running the executable outside the IDE/toolchain PATH.
+if (MINGW)
+    get_filename_component(MINGW_BIN_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+    foreach (MINGW_RUNTIME_DLL libstdc++-6.dll libgcc_s_seh-1.dll libwinpthread-1.dll)
+        if (EXISTS "${MINGW_BIN_DIR}/${MINGW_RUNTIME_DLL}")
+            file(COPY "${MINGW_BIN_DIR}/${MINGW_RUNTIME_DLL}" DESTINATION ${CMAKE_BINARY_DIR})
+        endif ()
+    endforeach ()
+endif ()
+
 # Find SDL2 package
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
