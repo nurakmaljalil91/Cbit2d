@@ -20,19 +20,17 @@ This repository contains `Cbit2d`, a C++20 SDL2-based 2D engine plus a sample ap
 - Language level: C++20 in `CMakeLists.txt`.
 - Main library target: `Cbit2d`.
 - Sample executable target: `Cbit2dApp`.
-- The project expects vendored SDL2, SDL_image, SDL_ttf, SDL_mixer, EnTT, spdlog, GLM, simdjson, and ImGui.
+- Dependency path: vendored dependencies under `vendors/`.
 - Editor code is enabled by `-DENABLE_EDITOR=ON` or debug builds that define `ENABLE_EDITOR`.
 - The active local workflow uses CLion's bundled CMake, Ninja, and MinGW toolchain with the build directory `cmake-build-debug`.
 
-## Common Commands
-
-Configure the debug build used locally:
+Configure the stable vendored debug build:
 
 ```powershell
 C:\Users\User\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/User/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -G Ninja -S C:\Users\User\Developments\Cbit2d -B C:\Users\User\Developments\Cbit2d\cmake-build-debug
 ```
 
-Build:
+Build the vendored debug build:
 
 ```powershell
 cmake --build cmake-build-debug

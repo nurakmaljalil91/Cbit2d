@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.29)
 project(Cbit2d VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
+message(STATUS "Using vendored dependencies.")
 
 # set entt path
 include_directories(vendors/entt)

@@ -1,157 +1,91 @@
 # Cbit2d
 
-Cbit2d is a custom 2D game engine built as a shared library, utilizing SDL2 for graphics and input, and spdlog for logging. This library is designed to be lightweight and easy to integrate into your 2D game projects.
+Cbit2d is a C++20 2D game engine and sample application built on SDL2, EnTT, spdlog, GLM, simdjson, and ImGui.
 
-## Features
+This repository uses vendored dependencies under `vendors/` for the current supported build workflow.
 
-- 2D game engine functionality
-- Easy integration with SDL2 for graphics and input handling
-- Logging with spdlog for detailed runtime information
-- Modular design for extensibility
-- Use of the EnTT library for ECS functionality
-- Cross-platform support (Windows, macOS, Linux)
-- C++17 compatible
-- Lightweight and easy to use
-- Open-source and free to use
-- MIT License
+## Project Layout
 
-## Requirements
+- `src/`: engine code
+- `src/core/`: application, scene, ECS, input, tile map, asset handling
+- `src/editor/`: ImGui debug/editor code behind `ENABLE_EDITOR`
+- `src/utilities/`: logging and machine helpers
+- `application/src/`: sample app entry point and scenes
+- `application/resources/`: images, fonts, audio, maps copied into the build output
+- `vendors/`: current vendored third-party libraries
 
-- CMake 3.28 or higher
-- MinGW for compiler (if using Windows)
-- A C++17 compatible compiler or higher
-- SDL2
-- spdlog
-- EnTT (for ECS functionality)
+## Prerequisites
 
-## Installation
+- CMake 3.29 or newer
+- A MinGW GCC toolchain
+- Ninja or MinGW Makefiles
+- The `vendors/` directory present with SDL2, SDL_image, SDL_ttf, SDL_mixer, EnTT, spdlog, GLM, simdjson, and ImGui
 
-### 1. Clone the Repository
+## Build
 
-```sh
-git clone https://github.com/nurakmaljalil91/cbit2d.git
-cd cbit2d
+This is the supported path for building and running the sample game.
+
+### Configure
+
+Using CLion's bundled CMake and Ninja:
+
+```powershell
+C:\Users\User\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/User/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -G Ninja -S C:\Users\User\Developments\Cbit2d -B C:\Users\User\Developments\Cbit2d\cmake-build-debug
 ```
 
-### 2. Build and Install the Library
+Or from a shell where `cmake` and `ninja` are already on `PATH`:
 
-```sh
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . --target install
+```powershell
+cmake -S . -B cmake-build-debug -G Ninja -DCMAKE_BUILD_TYPE=Debug
 ```
 
-or
+### Build
 
-```sh
-cmake -B _builds -DCMAKE_INSTALL_PREFIX="C:\Users\User\Developments\SharkCardGame\vendors\cbit2d" -G "MinGW Makefiles" -DCMAKE_CXX_STANDARD=20 -DENABLE_EDITOR=ON
-cmake --build _builds --target install
+```powershell
+cmake --build cmake-build-debug
 ```
 
-This will build and install the Cbit2d library to the default installation directory.
+### Run
 
-## Usage
-
-### 1. Include Cbit2d in Your Project
-
-Ensure that your project is set up to find and link against the installed Cbit2d library.
-
-#### `CMakeLists.txt`
-
-```cmake
-cmake_minimum_required(VERSION 3.28)
-
-project(MyGameProject)
-
-set(CMAKE_CXX_STANDARD 17)
-
-# Set Cbit2d path
-set(CBIT2D_PATH /path/to/cbit2d/installation)
-include_directories(${CBIT2D_PATH}/include)
-link_directories(${CBIT2D_PATH}/lib)
-
-# Set entt path
-include_directories(vendors/entt)
-
-# Set spdlog path
-set(spdlog_PATH vendors/spdlog)
-include_directories(${spdlog_PATH}/include)
-link_directories(${spdlog_PATH}/lib)
-
-# Set SDL2 path
-set(SDL2_PATH vendors/SDL2)
-include_directories(${SDL2_PATH}/include)
-link_directories(${SDL2_PATH}/lib)
-file(COPY ${SDL2_PATH}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
-
-# Find SDL2 package
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
-
-add_executable(MyGame application/src/main.cpp)
-
-target_link_libraries(MyGame PRIVATE Cbit2d SDL2::SDL2main SDL2::SDL2 spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32> pthread)
-
-# Set linker flags for console application
-set_target_properties(MyGame PROPERTIES
-        LINK_FLAGS "-mconsole"
-)
+```powershell
+C:\Users\User\Developments\Cbit2d\cmake-build-debug\Cbit2dApp.exe
 ```
 
-### 2. Initialize and Use the Library
+### Notes
 
-Ensure that the logger is initialized and used in your application.
+- The build copies SDL DLLs and MinGW runtime DLLs into `cmake-build-debug`
+- Runtime logs go to `cmake-build-debug\logs\logfile.log`
+- Runtime assets are copied to `cmake-build-debug\resources`
+- The app should be launched from the build output so it can find `resources/` and `logs/`
 
-#### `main.cpp`
+## Common Problems
 
-```cpp
-#include "Application.h"
+### App exits immediately on startup
 
-int main() {
-    Application app;
-    app.run();
-    return 0;
-}
-```
+Check:
 
-Create your scene and add too scene manager
+- `cmake-build-debug\logs\logfile.log`
+- `cmake-build-debug\resources\`
+- that the executable is being run from the build output
 
-```cpp
+### `Cbit2dApp.exe` says a DLL is missing
 
-#include "Scene.h"
+Rebuild first. The project now copies:
 
-class MyScene : public Scene {
-public:
-    MyScene() : Scene("MyScene") {
-        // Initialize your scene here
-    }
+- `SDL2.dll`
+- `SDL2_image.dll`
+- `SDL2_ttf.dll`
+- `SDL2_mixer.dll`
+- `libstdc++-6.dll`
+- `libgcc_s_seh-1.dll`
+- `libwinpthread-1.dll`
 
-    void setup() override {
-        // Called when the scene is attached to the scene manager
-        // setup your scene here
-    }
+## Current Recommendation
 
-    void update(float deltaTime, Input &input) override {
-        // Called every frame
-        // Update your scene here
-    }
-};
+If your goal is to work on the engine or run the sample app now:
 
-```
+1. Use the vendored workflow in this repository
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Author
-
-Nur Akmal bin Jalil - [GitHub](https://github.com/nurakmaljalil91)
-
-### Notes:
-
-- Make sure to replace `/path/to/cbit2d/installation` with the actual path where the Cbit2d library is installed.
-- Adjust the paths and configurations according to your actual project structure and requirements.
-- Provide additional instructions or details if necessary.
-
-This `README.md` should help users understand how to set up, build, install, and use the Cbit2d shared library in their projects.
+This project is licensed under the MIT License.

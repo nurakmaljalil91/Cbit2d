@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### 2026-03-30
+
+- Remove the incomplete Conan dependency path and return the repository to a vendored-only build workflow.
+
 ### 2026-03-29
 
 - Copy MinGW runtime DLLs into the build directory so `cmake-build-debug/Cbit2dApp.exe` can run directly outside CLion.
