@@ -78,7 +78,7 @@ Common local run behavior:
 
 When editing this repository:
 
-- Prefer introducing a real library target as the project matures.
+- Keep the `cbit2d` library target as the primary engine output.
 - Keep demo/test entry points thin and dependent on the library, not the other way around.
 - Avoid embedding game-specific rules, data, or content into core engine modules.
 - Treat SDL3 as the primary platform/rendering foundation unless a change explicitly expands that abstraction.
@@ -97,8 +97,8 @@ Preferred direction for future changes:
 
 ## Notes For Agents
 
-- Do not assume the current executable is the primary product.
-- Do assume this repo is expected to evolve into a reusable engine/library.
+- Do not assume the sandbox executable is the primary product.
+- Do assume this repo is expected to remain a reusable engine/library with a `cbit2d` target and a thin `Cbit2dSandbox` app.
 - Do prefer changes that help future submodule consumption.
 - Do preserve compatibility with the CLion + CMake + Ninja workflow unless there is a clear reason to change it.
 - If build/run behavior changes, update this file so the local workflow remains accurate.

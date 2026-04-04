@@ -29,29 +29,32 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     endif()
 endif()
 
-add_executable(
-    Cbit2dSDL3
-    apps/sandbox/main.cpp
-    apps/sandbox/scenes/menu_scene.cpp
-    apps/sandbox/scenes/play_scene.cpp
+add_library(
+    cbit2d
     src/assets/tile_map.cpp
     src/core/application.cpp
+    src/core/input.cpp
+    src/core/logger.cpp
+    src/core/scene_manager.cpp
     src/ecs/drag_system.cpp
     src/ecs/entity_component_system.cpp
     src/ecs/game_object.cpp
     src/ecs/sprite_animation_system.cpp
     src/ecs/sprite_render_system.cpp
     src/ecs/ui_system.cpp
-    src/core/input.cpp
-    src/core/logger.cpp
-    src/core/scene_manager.cpp
 )
 
-target_include_directories(Cbit2dSDL3 PRIVATE include)
+add_library(cbit2d::cbit2d ALIAS cbit2d)
+
+target_include_directories(
+    cbit2d
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 target_link_libraries(
-    Cbit2dSDL3
-    PRIVATE
+    cbit2d
+    PUBLIC
     SDL3::SDL3
     $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image>,SDL3_image::SDL3_image,SDL3_image::SDL3_image-static>
     $<IF:$<TARGET_EXISTS:SDL3_ttf::SDL3_ttf>,SDL3_ttf::SDL3_ttf,SDL3_ttf::SDL3_ttf-static>
@@ -61,6 +64,17 @@ target_link_libraries(
     spdlog::spdlog_header_only
 )
 
+add_executable(
+    Cbit2dSandbox
+    apps/sandbox/main.cpp
+    apps/sandbox/scenes/menu_scene.cpp
+    apps/sandbox/scenes/play_scene.cpp
+)
+
+target_link_libraries(Cbit2dSandbox PRIVATE cbit2d::cbit2d)
+target_include_directories(Cbit2dSandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/sandbox)
+
 if(MINGW)
-    target_compile_options(Cbit2dSDL3 PRIVATE -USPDLOG_FWRITE_UNLOCKED)
+    target_compile_options(cbit2d PRIVATE -USPDLOG_FWRITE_UNLOCKED)
+    target_compile_options(Cbit2dSandbox PRIVATE -USPDLOG_FWRITE_UNLOCKED)
 endif()

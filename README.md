@@ -29,9 +29,10 @@ Right now the project is still minimal:
 
 - CMake-based build
 - Dependencies discovered through `find_package(...)` and resolved locally through CLion's `vcpkg` toolchain
-- A simple executable target used for testing/bootstrap purposes
+- A reusable engine library target named `cbit2d`
+- A sandbox executable target named `Cbit2dSandbox` used for testing/bootstrap purposes
 
-That executable should be treated as a temporary validation app, not the long-term primary output of the repository.
+The sandbox executable should be treated as a validation app layered on top of the engine library, not the long-term primary output of the repository.
 
 ## Build Workflow
 
@@ -55,7 +56,7 @@ Toolchain file used locally:
 C:\Users\User\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake
 ```
 
-After build, any produced executable in the build folder is mainly for:
+After build, the `cbit2d` target is the reusable engine library and the `Cbit2dSandbox` executable in the build folder is mainly for:
 
 - smoke testing
 - runtime verification
@@ -64,10 +65,10 @@ After build, any produced executable in the build folder is mainly for:
 
 ## Recommended Direction
 
-As the project grows, the engine should move toward:
+As the project grows, the engine should continue moving toward:
 
-- a real library target for the engine core
-- a small sandbox/test application that links against the library
+- a stable library target for the engine core
+- a small sandbox/test application that links against that library
 - separated runtime, editor, and test code
 - explicit public API boundaries
 - clean integration with an external game repository
@@ -142,15 +143,22 @@ Cbit2D/
 
 The `game` side should depend on the engine's public API, while this repository stays focused on engine concerns rather than game-specific content.
 
+With the current CMake setup, external projects can consume the engine with:
+
+```cmake
+add_subdirectory(path/to/Cbit2d)
+target_link_libraries(MyGame PRIVATE cbit2d::cbit2d)
+```
+
 ## Near-Term Priorities
 
 Good next steps for the codebase:
 
-1. Split the current executable bootstrap from future engine library code.
-2. Introduce an actual engine library target in CMake.
-3. Create `include/` and `src/` directories with a small `core` module.
-4. Add dependency wiring for logging, math, ECS, JSON, and editor tooling incrementally.
-5. Keep the sandbox executable thin and use it only to exercise the engine.
+1. Keep growing the public API under `include/` so external game repos only depend on supported engine headers.
+2. Keep the sandbox executable thin and use it only to exercise the engine.
+3. Add dependency wiring for logging, math, ECS, JSON, and editor tooling incrementally.
+4. Separate runtime, tooling, and editor concerns more explicitly as the engine grows.
+5. Add tests and small integration samples for external consumers.
 
 ## Notes
 
