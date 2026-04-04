@@ -1,91 +1,159 @@
-# Cbit2d
+# Cbit2dSDL3
 
-Cbit2d is a C++20 2D game engine and sample application built on SDL2, EnTT, spdlog, GLM, simdjson, and ImGui.
+`Cbit2dSDL3` is the early foundation of a custom 2D game engine/library for the broader `Cbit2D` ecosystem.
 
-This repository uses vendored dependencies under `vendors/` for the current supported build workflow.
+This repository is intended to become a reusable engine module that can be consumed by separate game projects, not the final game application itself. In the larger setup, this repo is expected to live as a submodule inside a parent `Cbit2D` repository alongside one or more game repositories that depend on it.
 
-## Project Layout
+## Goals
 
-- `src/`: engine code
-- `src/core/`: application, scene, ECS, input, tile map, asset handling
-- `src/editor/`: ImGui debug/editor code behind `ENABLE_EDITOR`
-- `src/utilities/`: logging and machine helpers
-- `application/src/`: sample app entry point and scenes
-- `application/resources/`: images, fonts, audio, maps copied into the build output
-- `vendors/`: current vendored third-party libraries
+- Build a reusable 2D engine/library
+- Keep engine code separate from game-specific code
+- Use SDL3 as the main low-level graphics/platform layer
+- Provide a clean foundation for runtime systems, tooling, and editor features
+- Support a lightweight local executable for engine validation and testing
 
-## Prerequisites
+## Planned Core Dependencies
 
-- CMake 3.29 or newer
-- A MinGW GCC toolchain
-- Ninja or MinGW Makefiles
-- The `vendors/` directory present with SDL2, SDL_image, SDL_ttf, SDL_mixer, EnTT, spdlog, GLM, simdjson, and ImGui
+- `SDL3` for windowing, rendering, input, and platform abstraction
+- `spdlog` for logging
+- `entt` for ECS
+- `glm` for math
+- `simdjson` for JSON parsing
+- `ImGui` for editor and tooling UI
 
-## Build
+More libraries can be added later if they are justified by engine needs.
 
-This is the supported path for building and running the sample game.
+## Current State
 
-### Configure
+Right now the project is still minimal:
 
-Using CLion's bundled CMake and Ninja:
+- CMake-based build
+- Dependencies discovered through `find_package(...)` and resolved locally through CLion's `vcpkg` toolchain
+- A simple executable target used for testing/bootstrap purposes
 
-```powershell
-C:\Users\User\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/User/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -G Ninja -S C:\Users\User\Developments\Cbit2d -B C:\Users\User\Developments\Cbit2d\cmake-build-debug
-```
+That executable should be treated as a temporary validation app, not the long-term primary output of the repository.
 
-Or from a shell where `cmake` and `ninja` are already on `PATH`:
+## Build Workflow
 
-```powershell
-cmake -S . -B cmake-build-debug -G Ninja -DCMAKE_BUILD_TYPE=Debug
-```
+Primary local development is done with CLion on Windows using its bundled CMake and Ninja tools plus the CLion-managed `vcpkg` toolchain.
 
-### Build
+Typical CLion configure command:
 
 ```powershell
-cmake --build cmake-build-debug
+C:\Users\User\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/User/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -DCMAKE_TOOLCHAIN_FILE=C:\Users\User\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake -G Ninja -S C:\Users\User\Developments\Cbit2dSDL3 -B C:\Users\User\Developments\Cbit2dSDL3\cmake-build-debug
 ```
 
-### Run
+Typical local build directory:
 
-```powershell
-C:\Users\User\Developments\Cbit2d\cmake-build-debug\Cbit2dApp.exe
+```text
+C:\Users\User\Developments\Cbit2dSDL3\cmake-build-debug
 ```
 
-### Notes
+Toolchain file used locally:
 
-- The build copies SDL DLLs and MinGW runtime DLLs into `cmake-build-debug`
-- Runtime logs go to `cmake-build-debug\logs\logfile.log`
-- Runtime assets are copied to `cmake-build-debug\resources`
-- The app should be launched from the build output so it can find `resources/` and `logs/`
+```text
+C:\Users\User\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake
+```
 
-## Common Problems
+After build, any produced executable in the build folder is mainly for:
 
-### App exits immediately on startup
+- smoke testing
+- runtime verification
+- rendering checks
+- editor/tooling experiments
 
-Check:
+## Recommended Direction
 
-- `cmake-build-debug\logs\logfile.log`
-- `cmake-build-debug\resources\`
-- that the executable is being run from the build output
+As the project grows, the engine should move toward:
 
-### `Cbit2dApp.exe` says a DLL is missing
+- a real library target for the engine core
+- a small sandbox/test application that links against the library
+- separated runtime, editor, and test code
+- explicit public API boundaries
+- clean integration with an external game repository
 
-Rebuild first. The project now copies:
+## Proposed Repository Layout
 
-- `SDL2.dll`
-- `SDL2_image.dll`
-- `SDL2_ttf.dll`
-- `SDL2_mixer.dll`
-- `libstdc++-6.dll`
-- `libgcc_s_seh-1.dll`
-- `libwinpthread-1.dll`
+This is a practical target layout for the next phase of the project:
 
-## Current Recommendation
+```text
+Cbit2dSDL3/
+  CMakeLists.txt
+  README.md
+  AGENTS.md
+  cmake/
+  vendors/
+  include/
+    cbit/
+      core/
+      math/
+      ecs/
+      graphics/
+      assets/
+      scene/
+      io/
+      editor/
+  src/
+    core/
+    math/
+    ecs/
+    graphics/
+    assets/
+    scene/
+    io/
+    editor/
+  apps/
+    sandbox/
+  tests/
+  docs/
+```
 
-If your goal is to work on the engine or run the sample app now:
+Suggested responsibilities:
 
-1. Use the vendored workflow in this repository
+- `include/cbit/` holds public headers intended for consumers of the engine library
+- `src/` holds engine implementation
+- `apps/sandbox/` holds a lightweight test or demo executable
+- `tests/` holds automated tests as the project matures
+- `docs/` holds architecture notes, conventions, and subsystem documentation
+- `cmake/` holds custom CMake modules and helper scripts
 
-## License
+## Suggested Module Breakdown
 
-This project is licensed under the MIT License.
+Reasonable early engine modules:
+
+- `core` for application lifecycle, configuration, service bootstrapping, time, and platform abstractions
+- `graphics` for SDL-backed rendering, textures, camera basics, and render pipeline helpers
+- `ecs` for `entt` integration and world/entity orchestration
+- `math` for `glm` wrappers, transforms, and common math utilities
+- `assets` for resource loading and asset management
+- `io` for JSON and file loading
+- `scene` for scene composition and runtime coordination
+- `editor` for ImGui tooling and debug/editor windows
+
+## Integration Model
+
+Long-term, the larger setup can look like this:
+
+```text
+Cbit2D/
+  engine/        -> this repository as a submodule
+  game/          -> a separate game repository/submodule
+```
+
+The `game` side should depend on the engine's public API, while this repository stays focused on engine concerns rather than game-specific content.
+
+## Near-Term Priorities
+
+Good next steps for the codebase:
+
+1. Split the current executable bootstrap from future engine library code.
+2. Introduce an actual engine library target in CMake.
+3. Create `include/` and `src/` directories with a small `core` module.
+4. Add dependency wiring for logging, math, ECS, JSON, and editor tooling incrementally.
+5. Keep the sandbox executable thin and use it only to exercise the engine.
+
+## Notes
+
+- Prefer designing this repository as a reusable library first.
+- Avoid putting game-specific rules into the engine core.
+- Keep CLion compatibility and the existing CMake/Ninja workflow intact unless there is a clear reason to change them.

@@ -1,238 +1,173 @@
 /**
- * @file Application.cpp
- * @brief Implementation file for the Application class.
- *
- * This file contains the implementation of the Application class which encapsulates
- * the SDL2 application setup, main loop, and cleanup logic.
- *
- * @author Nur Akmal bin Jalil
- * @date 2024-07-20
+ * @file    application.cpp
+ * @brief   Source file for the Application class.
+ * @details This file contains the implementation of the Application class
+ *          which is responsible for creating the SDL window, handling the main
+ *          loop, updating the active scene, and releasing SDL resources.
+ * @author  Nur Akmal bin Jalil
+ * @date    2026-04-02
  */
-#include <iostream>
-#include "Application.h"
-#include "../utilities/LocalMachine.h"
-#include "AssetManager.h"
 
-Application::Application(const char *windowTitle, int windowWidth, int windowHeight, bool isFullscreen) :
-        _window(nullptr),
-        _renderer(nullptr),
-        _isQuit(false),
-        _defaultFont(nullptr) {
-    _windowConfig.title = windowTitle;
-    _windowConfig.width = windowWidth;
-    _windowConfig.height = windowHeight;
-    _windowConfig.isFullscreen = isFullscreen;
+#include "cbit/core/application.hpp"
+
+#include "cbit/core/input.hpp"
+#include "cbit/core/logger.hpp"
+
+namespace cbit2d::core {
+
+/**
+ * @brief Returns the application scene manager.
+ * @return Reference to the internal scene manager.
+ */
+SceneManager& Application::getSceneManager()
+{
+    return _sceneManager;
 }
 
+/**
+ * @brief Runs the application lifecycle.
+ * @param title Window title.
+ * @param width Window width in pixels.
+ * @param height Window height in pixels.
+ * @return Exit code for the process.
+ */
+int Application::run(const char* title, int width, int height)
+{
+    if (!initialize(title, width, height)) {
+        shutdown();
+        return 1;
+    }
 
-Application::~Application() {
-    cleanup();
+    _sceneManager.initializeActiveScene();
+
+    bool isRunning = true;
+    Uint64 previousFrameCounter = SDL_GetPerformanceCounter();
+
+    while (isRunning) {
+        Input::beginFrame();
+        SDL_Event event;
+
+        while (SDL_PollEvent(&event)) {
+            isRunning = handleEvent(event);
+            if (!isRunning) {
+                break;
+            }
+        }
+
+        if (isRunning) {
+            const Uint64 currentFrameCounter = SDL_GetPerformanceCounter();
+            const Uint64 elapsedCounter = currentFrameCounter - previousFrameCounter;
+            previousFrameCounter = currentFrameCounter;
+
+            const double performanceFrequency = static_cast<double>(SDL_GetPerformanceFrequency());
+            const float deltaTimeSeconds = performanceFrequency > 0.0
+                ? static_cast<float>(static_cast<double>(elapsedCounter) / performanceFrequency)
+                : 0.0F;
+
+            iterate(deltaTimeSeconds);
+        }
+    }
+
+    shutdown();
+    return 0;
 }
 
-bool Application::init() {
-    Logger::init();
+/**
+ * @brief Initializes SDL and creates the SDL window and renderer.
+ * @param title Window title.
+ * @param width Window width in pixels.
+ * @param height Window height in pixels.
+ * @return `true` when the SDL window and renderer are created successfully,
+ *         otherwise `false`.
+ */
+bool Application::initialize(const char* title, int width, int height)
+{
+    Logger::initialize();
+    Logger::info("CBit 2D Application started");
 
-
-    LOG_INFO("Starting Cbit 2D application");
-
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        LOG_ERROR("SDL could not initialize! SDL_Error: {}", SDL_GetError());
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
+        Logger::error("Couldn't initialize SDL: {}", SDL_GetError());
         return false;
     }
 
-    LOG_INFO("SDL initialized successfully");
-
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
-        LOG_ERROR("SDL_mixer could not initialize! SDL_mixer Error: {}", Mix_GetError());
+    if (!SDL_CreateWindowAndRenderer(title, width, height, 0, &_window, &_renderer)) {
+        Logger::error("Couldn't create window and renderer: {}", SDL_GetError());
         return false;
     }
 
-    if (_windowConfig.isFullscreen) {
-        _window = SDL_CreateWindow(_windowConfig.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   _windowConfig.width, _windowConfig.height,
-                                   SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN);
-    } else {
-        _window = SDL_CreateWindow(_windowConfig.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                   _windowConfig.width, _windowConfig.height,
-                                   SDL_WINDOW_SHOWN);
-    }
+    _isFullscreen = false;
+    return true;
+}
 
-    if (_window == nullptr) {
-        LOG_ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
+/**
+ * @brief Processes SDL events for the application.
+ * @param event Event to handle.
+ * @return `true` when the application should keep running, otherwise `false`.
+ */
+bool Application::handleEvent(const SDL_Event& event)
+{
+    Input::processEvent(event);
+
+    if (event.type == SDL_EVENT_QUIT) {
         return false;
     }
 
-    LOG_INFO("Window created successfully");
+    if (Input::isKeyPressed(Key::F11)) {
+        toggleFullscreen();
+        return true;
+    }
 
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-    if (_renderer == nullptr) {
-        LOG_ERROR("Renderer could not be created! SDL_Error: {}", SDL_GetError());
-        SDL_DestroyWindow(_window);
+    if (Input::isKeyPressed(Key::Escape)) {
         return false;
     }
-
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        LOG_ERROR("SDL_image could not initialize! SDL_image Error: {}", IMG_GetError());
-        return false;
-    }
-
-    if (TTF_Init() == -1) {
-        LOG_ERROR("SDL_ttf could not initialize! TTF_Error: {}", TTF_GetError());
-        return false;
-    }
-
-    _defaultFont = TTF_OpenFont(LocalMachine::getFontPath(), 24);
-    if (!_defaultFont) {
-        LOG_ERROR("Failed to load font: %s", TTF_GetError());
-    }
-
-    AssetManager::getInstance().init(_renderer);
-#ifdef ENABLE_EDITOR
-    if (_showDebugMode) {
-        _debugMode.setup(_window, _renderer);
-    }
-#endif
 
     return true;
 }
 
-void Application::run() {
-    _lastFPSTime = SDL_GetTicks(); // Initialize the last FPS update time
-    float deltaTime;
-    _lastFrameTick = SDL_GetTicks();
+/**
+ * @brief Renders one frame and updates the active scene.
+ * @param deltaTimeSeconds Elapsed time since the previous frame in seconds.
+ */
+void Application::iterate(float deltaTimeSeconds)
+{
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(_renderer);
 
-    while (!_isQuit) {
-        Uint32 startTick = SDL_GetTicks();
-        _input.clear();
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            _input.update(event);
-#ifdef ENABLE_EDITOR
-            if (_showDebugMode) {
-                _debugMode.handleInput(event);
-            }
-#endif
-        }
+    _sceneManager.updateActiveScene(deltaTimeSeconds);
+    _sceneManager.renderActiveScene(_renderer);
 
-#ifdef ENABLE_EDITOR
-        if (_showDebugMode) {
-            _debugMode.update(deltaTime, _sceneManager);
-        }
-#endif
-        if (_input.isQuit() || _input.isKeyPressed(SDLK_ESCAPE)) {
-            _isQuit = true;
-        }
+    SDL_RenderPresent(_renderer);
+}
 
-        if (_input.isKeyPressed(SDLK_F11)) {
-            toggleFullscreen();
-        }
+/**
+ * @brief Toggles the window between windowed and fullscreen modes.
+ */
+void Application::toggleFullscreen()
+{
+    _isFullscreen = !_isFullscreen;
 
-        // Calculate delta time
-        Uint32 currentTick = SDL_GetTicks();
-        deltaTime = static_cast<float>(currentTick - _lastFrameTick) / 1000.0f;
-        _lastFrameTick = currentTick;
-
-        // Calculate FPS
-        _frameCount++;
-        if (currentTick - _lastFPSTime >= 1000) { // Update FPS every second
-            _fps = _frameCount;
-            _frameCount = 0;
-            _lastFPSTime = currentTick;
-        }
-
-        _sceneManager.update(deltaTime, _input);
-
-        SDL_SetRenderDrawColor(_renderer, 0x00, 0x00, 0x00, 0xFF);
-        SDL_RenderClear(_renderer);
-
-        _sceneManager.render(_renderer);
-
-#ifdef ENABLE_EDITOR
-        if (_showDebugMode) {
-            _debugMode.render(_renderer);
-        }
-#endif
-        // Display FPS
-        if (_showFPS) {
-            std::string fpsText = "FPS: " + std::to_string(_fps);
-            renderApplicationTexts(_renderer, fpsText.c_str(), _defaultFont, 5, 5, SDL_Color{255, 255, 255, 255});
-        }
-
-        SDL_RenderPresent(_renderer);
-
-        // Cap frame rate
-        Uint32 endTick = SDL_GetTicks();
-        Uint32 frameTime = endTick - startTick;
-        if (frameTime < 1000 / 60) { // Assuming a 60 FPS cap
-            SDL_Delay((1000 / 60) - frameTime);
-        }
+    if (!SDL_SetWindowFullscreen(_window, _isFullscreen)) {
+        Logger::error("Couldn't toggle fullscreen mode: {}", SDL_GetError());
+        _isFullscreen = !_isFullscreen;
     }
 }
 
-void Application::cleanup() {
-    _sceneManager.cleanup();
-    AssetManager::getInstance().cleanup();
-
-#ifdef ENABLE_EDITOR
-    if (_showDebugMode) {
-        _debugMode.cleanup();
-    }
-#endif
-
+/**
+ * @brief Releases the SDL renderer and window and shuts SDL down.
+ */
+void Application::shutdown()
+{
     if (_renderer != nullptr) {
         SDL_DestroyRenderer(_renderer);
         _renderer = nullptr;
     }
+
     if (_window != nullptr) {
         SDL_DestroyWindow(_window);
         _window = nullptr;
     }
-    Mix_CloseAudio();
-    TTF_CloseFont(_defaultFont);
-    TTF_Quit();
-    IMG_Quit();
+
     SDL_Quit();
-    LOG_INFO("SDL _quit");
 }
 
-void Application::renderApplicationTexts(SDL_Renderer *renderer, const char *text, TTF_Font *font, int x, int y,
-                                         SDL_Color color) {
-    SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
-    if (surface == nullptr) {
-        LOG_ERROR("Unable to render text surface! TTF_Error: {}", TTF_GetError());
-        return;
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (texture == nullptr) {
-        LOG_ERROR("Unable to create texture from rendered text! SDL_Error: {}", SDL_GetError());
-        SDL_FreeSurface(surface);
-        return;
-    }
-
-    SDL_Rect dstRect = {x, y, surface->w, surface->h};
-    SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
-
-    SDL_DestroyTexture(texture);
-    SDL_FreeSurface(surface);
-}
-
-SceneManager &Application::getSceneManager() {
-    return _sceneManager;
-}
-
-void Application::toggleFullscreen() {
-    Uint32 fullscreenFlag = SDL_WINDOW_FULLSCREEN;
-    bool isFullscreen = SDL_GetWindowFlags(_window) & fullscreenFlag;
-    SDL_SetWindowFullscreen(_window, isFullscreen ? 0 : fullscreenFlag);
-//    SDL_ShowCursor(isFullscreen);
-}
-
-void Application::showFps() {
-    _showFPS = true;
-}
-
-void Application::showDebugMode() {
-    _showDebugMode = true;
-}
-
+} // namespace cbit2d::core
