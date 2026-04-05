@@ -23,6 +23,7 @@ void SceneManager::addScene(const std::string& sceneName, const std::shared_ptr<
         return;
     }
 
+    _initializedScenes.erase(sceneName);
     _scenes[sceneName] = scene;
 
     if (_activeSceneName.empty()) {
