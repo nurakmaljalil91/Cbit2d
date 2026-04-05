@@ -32,6 +32,7 @@ endif()
 add_library(
     cbit2d
     src/assets/tile_map.cpp
+    src/core/audio_service.cpp
     src/core/application.cpp
     src/core/input.cpp
     src/core/logger.cpp

@@ -10,6 +10,8 @@
 
 #include "cbit/core/application.hpp"
 
+#include <memory>
+
 #include "cbit/core/input.hpp"
 #include "cbit/core/logger.hpp"
 
@@ -95,6 +97,7 @@ bool Application::initialize(const char* title, int width, int height)
         return false;
     }
 
+    AudioService::initialize();
     _isFullscreen = false;
     return true;
 }
@@ -157,6 +160,10 @@ void Application::toggleFullscreen()
  */
 void Application::shutdown()
 {
+    _sceneManager = SceneManager{};
+
+    AudioService::shutdown();
+
     if (_renderer != nullptr) {
         SDL_DestroyRenderer(_renderer);
         _renderer = nullptr;

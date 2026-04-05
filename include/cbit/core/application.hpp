@@ -12,6 +12,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "cbit/core/audio_service.hpp"
 #include "cbit/core/scene_manager.hpp"
 
 namespace cbit2d::core {
