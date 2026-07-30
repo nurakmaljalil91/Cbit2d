@@ -92,7 +92,7 @@ bool Application::initialize(const char* title, int width, int height)
         return false;
     }
 
-    if (!SDL_CreateWindowAndRenderer(title, width, height, 0, &_window, &_renderer)) {
+    if (!SDL_CreateWindowAndRenderer(title, width, height, SDL_WINDOW_RESIZABLE, &_window, &_renderer)) {
         Logger::error("Couldn't create window and renderer: {}", SDL_GetError());
         return false;
     }
@@ -133,6 +133,18 @@ bool Application::handleEvent(const SDL_Event& event)
  */
 void Application::iterate(float deltaTimeSeconds)
 {
+    int windowWidth = 0;
+    int windowHeight = 0;
+    SDL_GetWindowSize(_window, &windowWidth, &windowHeight);
+    if (!SDL_SetRenderLogicalPresentation(
+            _renderer,
+            windowWidth,
+            windowHeight,
+            SDL_LOGICAL_PRESENTATION_STRETCH
+        )) {
+        Logger::error("Couldn't set logical UI presentation: {}", SDL_GetError());
+    }
+    _sceneManager.setActiveSceneUiViewport({static_cast<float>(windowWidth), static_cast<float>(windowHeight)});
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
     SDL_RenderClear(_renderer);
 
