@@ -16,6 +16,7 @@ find_package(fmt CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(yoga CONFIG REQUIRED)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     get_target_property(SPDLOG_HEADER_ONLY_OPTIONS spdlog::spdlog_header_only INTERFACE_COMPILE_OPTIONS)
@@ -43,6 +44,7 @@ add_library(
     src/ecs/sprite_animation_system.cpp
     src/ecs/sprite_render_system.cpp
     src/ecs/ui_system.cpp
+    src/ui/ui_context.cpp
 )
 
 add_library(cbit2d::cbit2d ALIAS cbit2d)
@@ -63,6 +65,7 @@ target_link_libraries(
     fmt::fmt-header-only
     glm::glm
     spdlog::spdlog_header_only
+    PRIVATE yoga::yogacore
 )
 
 add_executable(

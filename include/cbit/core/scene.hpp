@@ -13,6 +13,7 @@
 #include <SDL3/SDL.h>
 
 #include "cbit/ecs/entity_component_system.hpp"
+#include "cbit/ui/ui_context.hpp"
 
 namespace cbit2d::core {
 
@@ -57,8 +58,15 @@ public:
      */
     const cbit::ecs::EntityComponentSystem& getWorld() const;
 
+    /** @brief Returns the retained screen UI owned by this scene. */
+    cbit::ui::UiContext& getUi();
+
+    /** @brief Updates the logical UI viewport supplied by the application. */
+    void setUiViewport(cbit::ui::UiSize viewport);
+
 protected:
     cbit::ecs::EntityComponentSystem world;
+    cbit::ui::UiContext _ui;
 };
 
 /**
@@ -79,6 +87,16 @@ inline const cbit::ecs::EntityComponentSystem& Scene::getWorld() const
     return world;
 }
 
+inline cbit::ui::UiContext& Scene::getUi()
+{
+    return _ui;
+}
+
+inline void Scene::setUiViewport(const cbit::ui::UiSize viewport)
+{
+    _ui.setViewport(viewport);
+}
+
 /**
  * @brief Renders the scene using the provided SDL renderer.
  * @param renderer SDL renderer that owns the current frame.
@@ -86,6 +104,7 @@ inline const cbit::ecs::EntityComponentSystem& Scene::getWorld() const
 inline void Scene::render(SDL_Renderer* renderer)
 {
     world.render(renderer);
+    _ui.render(renderer);
 }
 
 } // namespace cbit2d::core

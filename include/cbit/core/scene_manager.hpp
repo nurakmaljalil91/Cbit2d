@@ -66,6 +66,9 @@ public:
      */
     void renderActiveScene(SDL_Renderer* renderer);
 
+    /** @brief Updates the active scene's logical screen UI viewport. */
+    void setActiveSceneUiViewport(cbit::ui::UiSize viewport);
+
 private:
     std::unordered_map<std::string, std::shared_ptr<Scene>> _scenes;
     std::unordered_set<std::string> _initializedScenes;

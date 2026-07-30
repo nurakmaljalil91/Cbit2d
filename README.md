@@ -41,7 +41,7 @@ Primary local development is done with CLion on Windows using its bundled CMake 
 Typical CLion configure command:
 
 ```powershell
-C:\Users\User\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/User/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -DCMAKE_TOOLCHAIN_FILE=C:\Users\User\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake -G Ninja -S C:\Users\User\Developments\Cbit2dSDL3 -B C:\Users\User\Developments\Cbit2dSDL3\cmake-build-debug
+C:\Users\User\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/User/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -DCMAKE_TOOLCHAIN_FILE=C:\Users\User\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic -G Ninja -S C:\Users\User\Developments\Cbit2dSDL3 -B C:\Users\User\Developments\Cbit2dSDL3\cmake-build-debug
 ```
 
 Typical local build directory:
@@ -149,6 +149,14 @@ With the current CMake setup, external projects can consume the engine with:
 add_subdirectory(path/to/Cbit2d)
 target_link_libraries(MyGame PRIVATE cbit2d::cbit2d)
 ```
+
+The active CLion toolchain is MinGW, so use the matching `x64-mingw-dynamic` vcpkg triplet. Mixing it with the MSVC `x64-windows` triplet is not ABI-compatible for C++ dependencies such as Yoga.
+
+## Responsive UI
+
+Screen UI is retained and layout-driven through `cbit::ui::UiContext`, which each `Scene` owns and exposes through `getUi()`. Build menus from the root using `addRow`, `addColumn`, `addPanel`, `addText`, and `addButton`; use `UiLength`, alignment, padding, and gap instead of `TransformComponent` screen coordinates. The engine recalculates layout from the current logical window viewport before rendering.
+
+The older ECS `TextComponent` and `ButtonComponent` remain supported for compatibility, but new screen-space menus should use `cbit::ui`.
 
 ## Near-Term Priorities
 

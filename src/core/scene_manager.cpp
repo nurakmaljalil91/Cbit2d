@@ -115,4 +115,12 @@ void SceneManager::renderActiveScene(SDL_Renderer* renderer)
     activeScene->render(renderer);
 }
 
+void SceneManager::setActiveSceneUiViewport(const cbit::ui::UiSize viewport)
+{
+    const auto activeScene = getActiveScene();
+    if (activeScene != nullptr) {
+        activeScene->setUiViewport(viewport);
+    }
+}
+
 } // namespace cbit2d::core
