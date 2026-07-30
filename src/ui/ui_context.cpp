@@ -214,8 +214,46 @@ static YGSize measureWidget(YGNodeConstRef node, float, YGMeasureMode, float, YG
     return {size.width, size.height};
 }
 
+void UiContext::ensureLayout()
+{
+    if (!_impl->dirty || _impl->viewport.width <= 0.0F || _impl->viewport.height <= 0.0F) return;
+
+    std::function<void(UiWidget&)> apply = [&](UiWidget& widget) {
+        YGNodeRef node = widget._impl->node;
+        YGNodeStyleSetDisplay(node, widget._layout.visible ? YGDisplayFlex : YGDisplayNone);
+        YGNodeStyleSetPadding(node, YGEdgeLeft, widget._layout.padding.left);
+        YGNodeStyleSetPadding(node, YGEdgeTop, widget._layout.padding.top);
+        YGNodeStyleSetPadding(node, YGEdgeRight, widget._layout.padding.right);
+        YGNodeStyleSetPadding(node, YGEdgeBottom, widget._layout.padding.bottom);
+        YGNodeStyleSetGap(node, YGGutterAll, widget._layout.gap);
+        applyDimension(node, widget._layout.width, true);
+        applyDimension(node, widget._layout.height, false);
+        applyDimension(node, widget._layout.minWidth, true, true);
+        applyDimension(node, widget._layout.minHeight, false, true);
+        applyDimension(node, widget._layout.maxWidth, true, false, true);
+        applyDimension(node, widget._layout.maxHeight, false, false, true);
+        const bool row = widget._type == UiWidgetType::Row;
+        YGNodeStyleSetJustifyContent(node, toYogaJustify(row ? widget._layout.horizontalAlignment : widget._layout.verticalAlignment));
+        YGNodeStyleSetAlignItems(node, toYogaAlign(row ? widget._layout.verticalAlignment : widget._layout.horizontalAlignment));
+        if (widget._type == UiWidgetType::Text || widget._type == UiWidgetType::Button) YGNodeSetMeasureFunc(node, measureWidget);
+        for (auto& child : widget._children) apply(*child);
+    };
+
+    apply(*_root);
+    YGNodeCalculateLayout(_root->_impl->node, _impl->viewport.width, _impl->viewport.height, YGDirectionLTR);
+    std::function<void(UiWidget&, UiRect)> store = [&](UiWidget& widget, const UiRect parent) {
+        YGNodeRef node = widget._impl->node;
+        widget._rect = {parent.x + YGNodeLayoutGetLeft(node), parent.y + YGNodeLayoutGetTop(node), YGNodeLayoutGetWidth(node), YGNodeLayoutGetHeight(node)};
+        widget._clipRect = widget._layout.clipChildren ? intersect(parent, widget._rect) : parent;
+        for (auto& child : widget._children) store(*child, widget._clipRect);
+    };
+    store(*_root, {0.0F, 0.0F, _impl->viewport.width, _impl->viewport.height});
+    _impl->dirty = false;
+}
+
 void UiContext::update()
 {
+    ensureLayout();
     const SDL_FPoint mouse = cbit2d::core::Input::getMousePosition();
     const bool pressed = cbit2d::core::Input::isMouseButtonPressed(cbit2d::core::MouseButton::Left);
     std::function<bool(UiWidget&, UiRect)> visit = [&](UiWidget& widget, const UiRect clip) {
@@ -239,38 +277,7 @@ void UiContext::update()
 void UiContext::render(SDL_Renderer* renderer)
 {
     if (renderer == nullptr || _impl->viewport.width <= 0.0F || _impl->viewport.height <= 0.0F) return;
-    std::function<void(UiWidget&)> apply = [&](UiWidget& widget) {
-        YGNodeRef node = widget._impl->node;
-        YGNodeStyleSetDisplay(node, widget._layout.visible ? YGDisplayFlex : YGDisplayNone);
-        YGNodeStyleSetPadding(node, YGEdgeLeft, widget._layout.padding.left);
-        YGNodeStyleSetPadding(node, YGEdgeTop, widget._layout.padding.top);
-        YGNodeStyleSetPadding(node, YGEdgeRight, widget._layout.padding.right);
-        YGNodeStyleSetPadding(node, YGEdgeBottom, widget._layout.padding.bottom);
-        YGNodeStyleSetGap(node, YGGutterAll, widget._layout.gap);
-        applyDimension(node, widget._layout.width, true);
-        applyDimension(node, widget._layout.height, false);
-        applyDimension(node, widget._layout.minWidth, true, true);
-        applyDimension(node, widget._layout.minHeight, false, true);
-        applyDimension(node, widget._layout.maxWidth, true, false, true);
-        applyDimension(node, widget._layout.maxHeight, false, false, true);
-        const bool row = widget._type == UiWidgetType::Row;
-        YGNodeStyleSetJustifyContent(node, toYogaJustify(row ? widget._layout.horizontalAlignment : widget._layout.verticalAlignment));
-        YGNodeStyleSetAlignItems(node, toYogaAlign(row ? widget._layout.verticalAlignment : widget._layout.horizontalAlignment));
-        if (widget._type == UiWidgetType::Text || widget._type == UiWidgetType::Button) YGNodeSetMeasureFunc(node, measureWidget);
-        for (auto& child : widget._children) apply(*child);
-    };
-    if (_impl->dirty) {
-        apply(*_root);
-        YGNodeCalculateLayout(_root->_impl->node, _impl->viewport.width, _impl->viewport.height, YGDirectionLTR);
-        std::function<void(UiWidget&, UiRect)> store = [&](UiWidget& widget, const UiRect parent) {
-            YGNodeRef node = widget._impl->node;
-            widget._rect = {parent.x + YGNodeLayoutGetLeft(node), parent.y + YGNodeLayoutGetTop(node), YGNodeLayoutGetWidth(node), YGNodeLayoutGetHeight(node)};
-            widget._clipRect = widget._layout.clipChildren ? intersect(parent, widget._rect) : parent;
-            for (auto& child : widget._children) store(*child, widget._clipRect);
-        };
-        store(*_root, {0.0F, 0.0F, _impl->viewport.width, _impl->viewport.height});
-        _impl->dirty = false;
-    }
+    ensureLayout();
 
     std::function<void(UiWidget&)> draw = [&](UiWidget& widget) {
         if (!widget._layout.visible) return;

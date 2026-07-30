@@ -149,6 +149,7 @@ private:
     friend class UiWidget;
     friend class cbit2d::core::Scene;
     void markLayoutDirty();
+    void ensureLayout();
     void render(::SDL_Renderer* renderer);
     struct Impl;
     std::unique_ptr<Impl> _impl;
